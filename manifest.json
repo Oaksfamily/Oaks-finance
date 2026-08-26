@@ -1,0 +1,11 @@
+{
+  "name": "Финансовый план",
+  "short_name": "ФинПлан",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f5f6f8",
+  "theme_color": "#f5f6f8",
+  "lang": "ru",
+  "description": "Личный финансовый план 2021–2031"
+}
