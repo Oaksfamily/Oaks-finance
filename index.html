@@ -1,0 +1,1255 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#f5f6f8">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<meta name="apple-mobile-web-app-title" content="ФинПлан">
+<meta name="mobile-web-app-capable" content="yes">
+<title>Финансовый план 4.3</title>
+<style>
+:root{
+ --bg:#f5f6f8;--card:#fff;--text:#17191d;--muted:#737b86;--line:#e3e6ea;
+ --accent:#2767d8;--good:#168a55;--bad:#c63f3f;--soft:#eef4ff
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
+.app{max-width:1280px;margin:auto;padding:16px 14px 90px}
+header{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+h1{margin:0;font-size:24px}.sub{font-size:12px;color:var(--muted);margin-top:4px}
+.tabs{display:flex;gap:8px;overflow:auto;padding:4px 0 12px}
+.tab{white-space:nowrap;border:1px solid var(--line);background:#fff;color:var(--text);border-radius:999px;padding:10px 13px;cursor:pointer}
+.tab.active{background:var(--text);color:#fff;border-color:var(--text)}
+section{display:none}section.active{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:15px;box-shadow:0 1px 2px rgba(0,0,0,.03)}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+h2{font-size:18px;margin:0 0 12px}h3{font-size:14px;margin:12px 0 8px}
+.klabel{font-size:12px;color:var(--muted)}.kval{font-size:24px;font-weight:750;margin-top:5px}.ksmall{font-size:11px;color:var(--muted);margin-top:4px}
+.good{color:var(--good)}.bad{color:var(--bad)}
+.row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.space{justify-content:space-between}
+input,select,button{font:inherit}input,select{border:1px solid var(--line);border-radius:10px;padding:9px 10px;background:#fff;min-height:40px;width:100%}
+button{border:0;border-radius:10px;padding:9px 12px;background:var(--text);color:#fff;cursor:pointer}.secondary{background:#fff;color:var(--text);border:1px solid var(--line)}.danger{background:#fff;color:var(--bad);border:1px solid #efcaca}
+.small{font-size:12px;color:var(--muted)}.notice{background:var(--soft);border:1px solid #dae7ff;border-radius:12px;padding:11px 13px;font-size:13px}
+table{width:100%;border-collapse:collapse}th,td{padding:9px 7px;border-bottom:1px solid var(--line);text-align:left;font-size:12px;vertical-align:middle}th{color:var(--muted);font-weight:650}
+.money{white-space:nowrap;font-variant-numeric:tabular-nums}.scroll{overflow:auto}.scroll table{min-width:900px}
+.formgrid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr;gap:8px}
+.badge{display:inline-block;padding:4px 8px;border-radius:999px;background:#f1f3f5;font-size:11px}
+@media(max-width:900px){.grid4{grid-template-columns:1fr 1fr}.grid2{grid-template-columns:1fr}.formgrid{grid-template-columns:1fr 1fr}}
+@media(max-width:520px){.grid4,.formgrid{grid-template-columns:1fr}.kval{font-size:21px}h1{font-size:21px}}
+.jsonbox{display:none;margin-top:10px}
+.jsonbox.show{display:block}
+.jsonbox textarea{width:100%;min-height:220px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;line-height:1.35}
+.status{font-size:12px;color:var(--muted);min-height:18px;margin-top:7px}
+
+
+.progress{height:9px;background:#eef0f3;border-radius:999px;overflow:hidden;min-width:110px}
+.progress>span{display:block;height:100%;background:var(--accent);border-radius:999px}
+.warn{color:#b26a00}.ok{color:var(--good)}
+.fund-controls{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+@media(max-width:700px){.fund-controls{grid-template-columns:1fr}}
+
+.bank-priority{width:72px}
+.bank-short{color:var(--bad);font-weight:700}
+.bank-ok{color:var(--good);font-weight:700}
+.bank-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+@media(max-width:700px){.bank-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+ <div><h1>Финансовый план 4.3</h1><div class="sub">Капитал · доходы · план 2027–2031 · обязательные и жизненные расходы · праздники</div></div>
+ <div class="row">
+ <span class="badge" id="dbStatus">База: загрузка…</span>
+ <button class="secondary" id="exportBtn">Резервная копия</button>
+ <button class="secondary" id="showJsonBtn">Показать JSON</button>
+ <button class="secondary" id="importBtn">Импорт JSON</button>
+ <input id="importFile" type="file" accept=".json,application/json" style="display:none">
+ <button class="secondary" id="resetBtn">Сбросить</button>
+</div>
+</header>
+
+<div class="card" id="storageInfo" style="margin-bottom:10px">
+ <div class="row space">
+  <div>
+   <h2 style="margin-bottom:4px">Постоянное хранение данных</h2>
+   <div class="small">Все изменения сохраняются автоматически. Основная база — IndexedDB, резерв — localStorage.</div>
+  </div>
+  <span class="badge" id="lastSavedAt">Загрузка…</span>
+ </div>
+ <div class="small" style="margin-top:6px">После публикации на одном HTTPS-адресе обновление интерфейса не стирает базу. На iPhone приложение можно добавить на экран Домой.</div>
+ <div class="small" style="margin-top:4px"><b>Важно:</b> версия 4.0 хранит данные на текущем устройстве. Для синхронизации iPhone ↔ компьютер потребуется облачная база.</div>
+</div>
+
+<div class="tabs">
+ <button class="tab active" data-tab="capital">1. Капитал</button>
+ <button class="tab" data-tab="income">2. Доход</button>
+ <button class="tab" data-tab="incomeplan">3. Доход план</button>
+ <button class="tab" data-tab="mandatory">4. Обязательные платежи</button>
+ <button class="tab" data-tab="life">5. Расход жизнь</button>
+ <button class="tab" data-tab="holidays">6. Расход праздники</button>
+ <button class="tab" data-tab="funds">7. Распределение в фонды</button>
+ <button class="tab" data-tab="banks">8. Счета банков</button>
+</div>
+
+<div class="card" id="backupCard" style="margin-bottom:10px">
+ <div class="row space">
+  <div>
+   <h2 style="margin-bottom:4px">Резервная копия данных</h2>
+   <div class="small">На iPhone надёжнее всего нажать «Сохранить JSON» и выбрать «Сохранить в Файлы». Если меню не появится — используй «Показать JSON».</div>
+  </div>
+  <span class="badge" id="saveStateBadge">Данные сохраняются автоматически</span>
+ </div>
+ <div id="jsonBox" class="jsonbox">
+  <textarea id="jsonText" readonly aria-label="JSON резервной копии"></textarea>
+  <div class="row" style="margin-top:8px">
+   <button id="selectJsonBtn" type="button">Выделить весь JSON</button>
+   <button id="copyJsonBtn" type="button" class="secondary">Скопировать</button>
+   <button id="hideJsonBtn" type="button" class="secondary">Скрыть</button>
+  </div>
+  <div class="status" id="jsonStatus"></div>
+ </div>
+</div>
+
+<section id="capital" class="active">
+ <div class="notice" style="margin-bottom:10px">
+  <b>Версия 3.1 с заполненной базой.</b>
+  Уже внесены история доходов 2021–2026, план 2027–2031, ипотечные платежи,
+  основные расходы на жизнь, известные ежегодные обязательные платежи и известные бюджеты на дни рождения.
+  Пустыми оставлены только суммы и даты, которых в исходных данных не было.
+ </div>
+ <div class="grid4">
+  <div class="card"><div class="klabel">Стоимость активов</div><div class="kval" id="capitalGross">—</div></div>
+  <div class="card"><div class="klabel">Обременения</div><div class="kval bad" id="capitalDebt">—</div></div>
+  <div class="card"><div class="klabel">Чистый капитал</div><div class="kval good" id="capitalNet">—</div></div>
+  <div class="card"><div class="klabel">Платежи по обременениям / мес.</div><div class="kval" id="capitalMonthlyDebt">—</div></div>
+ </div>
+ <div class="card" style="margin-top:10px">
+  <div class="row space"><h2>Активы и обременения</h2><span class="small">Все значения редактируются</span></div>
+  <div class="scroll"><table style="min-width:960px"><thead><tr><th>Актив</th><th>Стоимость актива, ₽</th><th>Обременение, ₽</th><th>Дата завершения</th><th>Платёж / месяц, ₽</th><th>Чистая стоимость</th><th></th></tr></thead><tbody id="assetBody"></tbody></table></div>
+  <div class="formgrid" style="margin-top:10px">
+   <input id="assetName" placeholder="Новый актив">
+   <input id="assetValue" type="number" placeholder="Стоимость ₽">
+   <input id="assetDebt" type="number" placeholder="Обременение ₽">
+   <input id="assetEnd" type="date">
+   <input id="assetPayment" type="number" placeholder="Платёж/мес. ₽">
+  </div>
+  <button id="addAsset" style="margin-top:8px">Добавить актив</button>
+ </div>
+</section>
+
+<section id="income">
+ <div class="card">
+  <div class="row space"><div><h2>Доходы 2021–2031</h2><div class="small">2021–2026 заполнены известными данными. 2027–2031 добавлены пустыми для ручного заполнения фактических доходов по мере наступления месяцев.</div></div>
+   <label class="small">Год<select id="historyYear" style="width:auto;min-width:105px"></select></label>
+  </div>
+  <div class="grid4" style="margin-top:10px">
+   <div class="card" style="padding:12px"><div class="klabel">Доход за год</div><div class="kval" id="historyTotal">—</div></div>
+   <div class="card" style="padding:12px"><div class="klabel">Среднее / месяц</div><div class="kval" id="historyAvg">—</div></div>
+   <div class="card" style="padding:12px"><div class="klabel">Лучший месяц</div><div class="kval" id="historyBestMonth">—</div><div class="ksmall" id="historyBestValue"></div></div>
+   <div class="card" style="padding:12px"><div class="klabel">Колонок дохода</div><div class="kval">7</div></div>
+  </div>
+  <div class="notice" style="margin-top:10px">
+   Годы 2027–2031 во вкладке «Доход» специально пустые. Здесь можно заносить фактические поступления вручную, не меняя автоматический план во вкладке «Доход план».
+  </div>
+  <div class="scroll" style="margin-top:12px">
+   <table style="min-width:1120px"><thead><tr><th>Месяц</th><th>Пособие 8 день</th><th>10 день</th><th>15 день</th><th>25 день</th><th>28 день</th><th>Студия доход</th><th>Доход прочие</th><th>Итого</th></tr></thead><tbody id="historyBody"></tbody></table>
+  </div>
+ </div>
+ <div class="card" style="margin-top:10px">
+  <h2>Итоги по годам</h2>
+  <div class="scroll"><table style="min-width:980px"><thead><tr><th>Год</th><th>Пособие</th><th>10 день</th><th>15 день</th><th>25 день</th><th>28 день</th><th>Студия</th><th>Прочие</th><th>Итого</th></tr></thead><tbody id="historyStatsBody"></tbody></table></div>
+ </div>
+</section>
+
+<section id="incomeplan">
+ <div class="card">
+  <div class="row space"><div><h2>Доход план 2027–2031</h2><div class="small">Автоматический план можно полностью редактировать. Кнопка пересчёта возвращает расчёт по статистике.</div></div>
+   <div class="row"><label class="small">Год<select id="planYear" style="width:auto;min-width:105px"></select></label><button class="secondary" id="recalcPlan">Пересчитать</button></div>
+  </div>
+  <div class="notice">
+   8 день — пособие 58 000 ₽ до апреля 2027 включительно. 10 день — 157 900 ₽ в 2027 и +10 000 ₽/мес. каждый следующий год.
+   15 день — среднее по тому же месяцу прошлых фактических лет без индексации. 25 день — база 2026 без индексации.
+   28 день — среднее 2025–2026; по умолчанию февраль и март оставлены пустыми как два месяца без выплаты. Студия — 35 000 ₽ с 01.03.2027. Прочие — пусто.
+  </div>
+  <div class="grid4" style="margin-top:10px">
+   <div class="card" style="padding:12px"><div class="klabel">План за год</div><div class="kval" id="planTotal">—</div></div>
+   <div class="card" style="padding:12px"><div class="klabel">Среднее / месяц</div><div class="kval" id="planAvg">—</div></div>
+   <div class="card" style="padding:12px"><div class="klabel">10 день / месяц</div><div class="kval" id="planD10">—</div></div>
+   <div class="card" style="padding:12px"><div class="klabel">28 день — среднее</div><div class="kval" id="planD28">—</div></div>
+  </div>
+  <div class="scroll" style="margin-top:12px">
+   <table style="min-width:1120px"><thead><tr><th>Месяц</th><th>Пособие 8 день</th><th>10 день</th><th>15 день</th><th>25 день</th><th>28 день</th><th>Студия доход</th><th>Доход прочие</th><th>Итого</th></tr></thead><tbody id="planBody"></tbody></table>
+  </div>
+ </div>
+ <div class="card" style="margin-top:10px">
+  <h2>Итоги плана по годам</h2>
+  <div class="scroll"><table style="min-width:980px"><thead><tr><th>Год</th><th>Пособие</th><th>10 день</th><th>15 день</th><th>25 день</th><th>28 день</th><th>Студия</th><th>Прочие</th><th>Итого</th></tr></thead><tbody id="planStatsBody"></tbody></table></div>
+ </div>
+</section>
+
+<section id="mandatory">
+ <div class="grid4">
+  <div class="card"><div class="klabel">Ежемесячные обязательные</div><div class="kval" id="mandatoryMonthly">—</div></div>
+  <div class="card"><div class="klabel">Ежегодные обязательные</div><div class="kval" id="mandatoryAnnual">—</div></div>
+  <div class="card"><div class="klabel">Всего в год</div><div class="kval bad" id="mandatoryYearTotal">—</div></div>
+  <div class="card"><div class="klabel">Статей</div><div class="kval" id="mandatoryCount">—</div></div>
+ </div>
+ <div class="card" style="margin-top:10px">
+  <div class="row space"><h2>Обязательные платежи</h2><span class="small">Известные суммы уже внесены; неизвестные можно заполнить вручную</span></div>
+  <div class="notice" style="margin-bottom:10px">
+   Пока отдельная разбивка не задана, в итогах автоматически учитываются известные общие суммы:
+   <b>интернет + мобильная связь — 3 000 ₽/мес.</b>,
+   <b>страхование Марата — 25 000 ₽ в мае</b>,
+   <b>страхование студии — 27 500 ₽ в мае</b>,
+   <b>налоги имущество + Lada — 15 000 ₽ в октябре</b>.
+   Как только ты заполнишь соответствующие отдельные строки, общая временная сумма перестанет учитываться, чтобы не было двойного счёта.
+  </div>
+  <div class="scroll"><table style="min-width:860px"><thead><tr><th>Платёж</th><th>Период</th><th>Сумма, ₽</th><th></th></tr></thead><tbody id="mandatoryBody"></tbody></table></div>
+  <div class="formgrid" style="grid-template-columns:2fr 1fr 1fr;margin-top:10px">
+   <input id="mandatoryNewName" placeholder="Новый обязательный платёж">
+   <select id="mandatoryNewPeriod">
+    <option>Ежемесячно</option>
+    <option>Январь</option><option>Февраль</option><option>Март</option><option>Апрель</option>
+    <option>Май</option><option>Июнь</option><option>Июль</option><option>Август</option>
+    <option>Сентябрь</option><option>Октябрь</option><option>Ноябрь</option><option>Декабрь</option>
+    <option>По событию</option>
+   </select>
+   <input id="mandatoryNewAmount" type="number" min="0" step="100" placeholder="Сумма ₽">
+  </div>
+  <button id="addMandatory" style="margin-top:8px">Добавить обязательный расход</button>
+ </div>
+</section>
+
+<section id="life">
+ <div class="grid4">
+  <div class="card"><div class="klabel">Жизнь / месяц</div><div class="kval bad" id="lifeMonthly">—</div></div>
+  <div class="card"><div class="klabel">Жизнь / год</div><div class="kval" id="lifeAnnual">—</div></div>
+  <div class="card"><div class="klabel">Категорий</div><div class="kval" id="lifeCount">—</div></div>
+  <div class="card"><div class="klabel">НЗ / месяц</div><div class="kval" id="lifeNz">—</div></div>
+ </div>
+ <div class="card" style="margin-top:10px">
+  <h2>Расход жизнь</h2>
+  <div class="small" style="margin-bottom:8px">Текущая заполненная база: еда 90 000 ₽, быт 23 000 ₽, дети 21 000 ₽, бензин 12 000 ₽, рестораны 10 000 ₽, НЗ 15 000 ₽. Итого 171 000 ₽/мес.</div>
+  <div class="scroll"><table style="min-width:720px"><thead><tr><th>Категория</th><th>Сумма / месяц, ₽</th><th></th></tr></thead><tbody id="lifeBody"></tbody></table></div>
+  <div class="formgrid" style="grid-template-columns:2fr 1fr;margin-top:10px">
+   <input id="lifeNewName" placeholder="Новая категория расхода">
+   <input id="lifeNewAmount" type="number" min="0" step="100" placeholder="Сумма / месяц ₽">
+  </div>
+  <button id="addLife" style="margin-top:8px">Добавить расход на жизнь</button>
+ </div>
+</section>
+
+<section id="holidays">
+ <div class="grid4">
+  <div class="card"><div class="klabel">Бюджет праздников / год</div><div class="kval bad" id="holidayTotal">—</div></div>
+  <div class="card"><div class="klabel">Событий</div><div class="kval" id="holidayCount">—</div></div>
+  <div class="card"><div class="klabel">Среднее на событие</div><div class="kval" id="holidayAvg">—</div></div>
+  <div class="card"><div class="klabel">Даты заполнены</div><div class="kval" id="holidayDates">—</div></div>
+ </div>
+ <div class="card" style="margin-top:10px">
+  <div class="row space"><h2>Расход праздники</h2><span class="small">Дата в формате ДД.ММ</span></div>
+  <div class="scroll"><table style="min-width:820px"><thead><tr><th>Событие</th><th>Дата</th><th>Сумма, ₽</th><th></th></tr></thead><tbody id="holidayBody"></tbody></table></div>
+  <div class="formgrid" style="grid-template-columns:2fr 1fr 1fr;margin-top:10px">
+   <input id="holidayNewName" placeholder="Новое событие">
+   <input id="holidayNewDate" placeholder="ДД.ММ">
+   <input id="holidayNewAmount" type="number" min="0" step="100" placeholder="Сумма ₽">
+  </div>
+  <button id="addHoliday" style="margin-top:8px">Добавить расход на праздник</button>
+ </div>
+</section>
+<section id="funds">
+ <div class="grid4">
+  <div class="card"><div class="klabel">Доход за год</div><div class="kval" id="fundIncomeYear">—</div><div class="ksmall" id="fundIncomeSource"></div></div>
+  <div class="card"><div class="klabel">Обязательные платежи / год</div><div class="kval bad" id="fundMandatoryYear">—</div></div>
+  <div class="card"><div class="klabel">Остаток для фондов / год</div><div class="kval good" id="fundFreeYear">—</div></div>
+  <div class="card"><div class="klabel">Сумма процентов</div><div class="kval" id="fundPercentTotal">—</div><div class="ksmall" id="fundPercentStatus"></div></div>
+ </div>
+
+ <div class="card" style="margin-top:10px">
+  <div class="row space">
+   <div>
+    <h2>Распределение остатка месяца</h2>
+    <div class="small">Доход конкретного месяца → обязательные платежи этого месяца → остаток → фонды.</div>
+   </div>
+   <label class="small">Год
+    <select id="fundYear" style="width:auto;min-width:105px"></select>
+   </label>
+  </div>
+
+  <div class="notice" style="margin-top:10px">
+   Ежемесячные обязательные платежи списываются каждый месяц. Платежи с периодом «Май», «Июнь», «Октябрь» и другими месяцами списываются только в своём месяце.
+   Расходы «По событию» в автоматическое месячное распределение не входят, пока им не назначен конкретный месяц.
+   Если фактический доход за месяц уже внесён во вкладке «Доход», используется он; иначе для 2027–2031 берётся значение из «Доход план».
+  </div>
+
+  <div class="scroll" style="margin-top:12px">
+   <table id="fundMonthlyTable" style="min-width:1300px">
+    <thead id="fundMonthlyHead"></thead>
+    <tbody id="fundMonthlyBody"></tbody>
+    <tfoot id="fundMonthlyFoot"></tfoot>
+   </table>
+  </div>
+ </div>
+
+ <div class="card" style="margin-top:10px">
+  <div class="row space">
+   <div><h2>Фонды и проценты</h2><div class="small">Проценты применяются к положительному остатку каждого месяца.</div></div>
+   <button class="secondary" id="normalizeFunds">Нормализовать до 100%</button>
+  </div>
+  <div class="scroll" style="margin-top:10px">
+   <table style="min-width:1000px">
+    <thead><tr><th>Фонд</th><th>Цель, ₽</th><th>Накоплено, ₽</th><th>%</th><th>План отчислений за выбранный год</th><th>Прогресс</th><th></th></tr></thead>
+    <tbody id="fundBody"></tbody>
+   </table>
+  </div>
+
+  <div class="formgrid" style="grid-template-columns:2fr 1fr 1fr 1fr;margin-top:10px">
+   <input id="fundNewName" placeholder="Новый фонд">
+   <input id="fundNewTarget" type="number" min="0" step="1000" placeholder="Цель ₽">
+   <input id="fundNewCurrent" type="number" min="0" step="1000" placeholder="Накоплено ₽">
+   <input id="fundNewPercent" type="number" min="0" max="100" step="1" placeholder="%">
+  </div>
+  <button id="addFund" style="margin-top:8px">Добавить фонд</button>
+ </div>
+</section>
+
+
+<section id="banks">
+ <div class="grid4">
+  <div class="card"><div class="klabel">Доход выбранного месяца</div><div class="kval" id="bankIncome">—</div><div class="ksmall" id="bankIncomeSource"></div></div>
+  <div class="card"><div class="klabel">План переводов</div><div class="kval" id="bankPlanned">—</div></div>
+  <div class="card"><div class="klabel">Фактически распределено</div><div class="kval good" id="bankAllocated">—</div></div>
+  <div class="card"><div class="klabel">Нехватка / остаток</div><div class="kval" id="bankGap">—</div><div class="ksmall" id="bankGapNote"></div></div>
+ </div>
+
+ <div class="card" style="margin-top:10px">
+  <div class="row space">
+   <div>
+    <h2>Распределение дохода между счетами</h2>
+    <div class="small">Система работает по приоритетам: сначала финансируются счета с меньшим номером приоритета, затем следующие; счёт типа «Остаток» получает всё, что осталось.</div>
+   </div>
+   <div class="row">
+    <label class="small">Год<select id="bankYear" style="width:auto;min-width:100px"></select></label>
+    <label class="small">Месяц<select id="bankMonth" style="width:auto;min-width:130px"></select></label>
+   </div>
+  </div>
+
+  <div class="notice" style="margin-top:10px">
+   <b>Стартовая схема:</b> Сбер 75 000 ₽ → Банк Россия 35 000 ₽ → Райффайзен 171 000 ₽ → Т-Банк 30 000 ₽ → весь остаток на накопительный счёт.
+   Это именно схема движения денег между банками. Лимиты и приоритеты можно изменить под фактические счета.
+  </div>
+
+  <div class="scroll" style="margin-top:12px">
+   <table style="min-width:1080px">
+    <thead><tr><th>Приоритет</th><th>Банк</th><th>Назначение</th><th>Тип</th><th>Лимит / мес.</th><th>Перевести</th><th>Недофинансировано</th><th></th></tr></thead>
+    <tbody id="bankBody"></tbody>
+   </table>
+  </div>
+
+  <div class="formgrid" style="grid-template-columns:1fr 1.6fr 1fr 1fr 1fr;margin-top:10px">
+   <input id="bankNewBank" placeholder="Банк">
+   <input id="bankNewName" placeholder="Назначение счёта">
+   <select id="bankNewType"><option value="fixed">Фиксированный лимит</option><option value="remainder">Остаток</option></select>
+   <input id="bankNewTarget" type="number" min="0" step="1000" placeholder="Лимит ₽">
+   <input id="bankNewPriority" type="number" min="1" step="1" placeholder="Приоритет">
+  </div>
+  <button id="addBankAccount" style="margin-top:8px">Добавить счёт</button>
+ </div>
+
+ <div class="card" style="margin-top:10px">
+  <h2>План переводов по месяцам</h2>
+  <div class="small">Показывает, сколько переводить на каждый банковский счёт после каждого месяца дохода.</div>
+  <div class="scroll" style="margin-top:10px">
+   <table id="bankYearTable" style="min-width:1200px">
+    <thead id="bankYearHead"></thead>
+    <tbody id="bankYearBody"></tbody>
+    <tfoot id="bankYearFoot"></tfoot>
+   </table>
+  </div>
+ </div>
+</section>
+
+</div>
+
+<script>
+(function(){
+'use strict';
+var KEY='financePlannerSimpleV31';
+var MONTHS=['','Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+var COLS=['benefit','d10','d15','d25','d28','studio','other'];
+
+function clone(x){return JSON.parse(JSON.stringify(x));}
+function rub(n){return new Intl.NumberFormat('ru-RU',{maximumFractionDigits:0}).format(Math.round(Number(n)||0))+' ₽';}
+function num(v){var n=Number(v);return Number.isFinite(n)?n:0;}
+function valOrBlank(v){return (v===null||v===undefined||v==='')?'':String(v);}
+function sumRow(r){var s=0;COLS.forEach(function(k){s+=num(r[k]);});return s;}
+function monthRow(){return {benefit:'',d10:'',d15:'',d25:'',d28:'',studio:'',other:''};}
+
+var historyData={
+2021:[
+[0,220000,100000,0,0,0,0],[0,220000,100000,0,0,0,0],[0,160000,100000,0,0,0,0],[0,190000,100000,0,0,0,0],
+[0,200000,100000,0,0,0,0],[0,198000,100000,0,0,0,0],[0,200000,100000,0,0,0,0],[0,284000,100000,0,0,0,0],
+[0,165000,100000,0,0,0,0],[0,300000,100000,0,0,0,0],[0,250000,100000,0,0,0,0],[0,220000,100000,0,0,0,0]],
+2022:[
+[0,250000,100000,0,0,0,0],[0,210000,120000,0,0,0,0],[0,200000,120000,0,0,0,0],[0,200000,120000,0,0,0,0],
+[0,130000,120000,0,0,0,0],[0,220000,120000,0,0,0,0],[0,300000,120000,0,0,0,0],[0,250000,120000,0,0,0,0],
+[0,300000,120000,0,0,0,0],[0,275000,120000,0,0,0,0],[0,300000,120000,0,0,0,0],[0,300000,120000,0,0,0,0]],
+2023:[
+[0,330000,120000,0,0,0,0],[0,300000,120000,0,0,0,0],[0,300000,120000,0,0,0,0],[0,320000,120000,0,0,0,0],
+[0,355000,120000,0,0,0,0],[0,385000,120000,0,0,0,0],[0,385000,120000,0,0,0,0],[0,340000,120000,0,0,0,0],
+[0,330000,120000,0,0,0,0],[0,330000,120000,0,0,0,0],[0,385000,120000,0,0,0,0],[0,300000,120000,0,0,0,0]],
+2024:[
+[0,300000,130000,0,0,0,0],[0,300000,130000,0,0,0,0],[0,355000,130000,0,0,0,0],[0,385000,130000,170000,30000,0,0],
+[0,155000,130000,170000,30000,0,0],[0,210000,130000,170000,0,0,0],[0,210000,130000,170000,0,0,0],[0,155000,130000,170000,0,0,0],
+[0,130000,130000,170000,0,0,0],[0,95000,130000,170000,0,0,0],[0,45000,130000,170000,0,0,0],[0,185000,130000,170000,0,0,0]],
+2025:[
+[0,115000,174000,17500,185000,0,0],[0,130500,0,17500,0,0,0],[0,130500,0,17500,0,0,0],[0,130500,174000,17500,125000,0,0],
+[0,130500,174000,17500,120000,0,0],[0,130500,174000,17500,95000,0,0],[0,130500,174000,17500,240000,0,0],[0,130500,174000,17500,155000,0,0],
+[0,130500,174000,17500,175000,0,0],[0,130500,174000,17500,260000,0,0],[58000,130500,174000,17500,260000,0,0],[58000,130500,174000,17500,150000,0,0]],
+2026:[
+[58000,130500,174000,17500,360000,0,0],[58000,147900,174000,17500,195000,0,0],[58000,147900,174000,17500,65000,0,0],[58000,147900,174000,17500,260000,0,0],
+[58000,147900,174000,17500,0,0,0],[58000,147900,174000,17500,400000,0,0],[58000,147900,260000,17500,330000,0,0],[58000,147900,0,0,0,0,0],
+['','','','','','',''],['','','','','','',''],['','','','','','',''],['','','','','','','']]
+};
+
+function historyObject(){
+ var out={};
+ Object.keys(historyData).forEach(function(ys){
+  var y=Number(ys);out[y]={};
+  historyData[y].forEach(function(a,idx){
+   out[y][idx+1]={benefit:a[0],d10:a[1],d15:a[2],d25:a[3],d28:a[4],studio:a[5],other:a[6]};
+  });
+ });
+ return out;
+}
+
+var DEFAULT={
+ historyYear:2026,planYear:2027,
+ assets:[
+  {id:'apt',name:'Квартира Марата 14',value:20000000,debt:5500000,end:'',payment:40000},
+  {id:'studio',name:'Студия 22 м²',value:'',debt:4500000,end:'',payment:27000},
+  {id:'lada',name:'Lada Granta 2024',value:850000,debt:0,end:'',payment:0},
+  {id:'cash',name:'Денежные средства',value:1000000,debt:0,end:'',payment:0}
+ ],
+ history:historyObject(),
+ plan:{},
+ mandatory:[
+  {id:'mort_apt',name:'Ипотека Марата',period:'Ежемесячно',amount:40000},
+  {id:'mort_studio',name:'Ипотека студия',period:'Ежемесячно',amount:27000},
+  {id:'ku_apt',name:'КУ Марата',period:'Ежемесячно',amount:10000},
+  {id:'light_apt',name:'Свет Марата',period:'Ежемесячно',amount:6000},
+  {id:'net_apt',name:'Интернет Марата',period:'Ежемесячно',amount:''},
+  {id:'mobile_a',name:'Мобильная связь Алексей',period:'Ежемесячно',amount:''},
+  {id:'mobile_v',name:'Мобильная связь Валюша',period:'Ежемесячно',amount:''},
+  {id:'ya_a',name:'Яндекс подписка Алексей',period:'Ежемесячно',amount:''},
+  {id:'ya_v',name:'Яндекс подписка Валюша',period:'Ежемесячно',amount:''},
+  {id:'rutube',name:'Рутуб',period:'Ежемесячно',amount:''},
+  {id:'vpn',name:'ВПН',period:'Ежемесячно',amount:''},
+  {id:'chatgpt',name:'ЧатGPT',period:'Ежемесячно',amount:''},
+  {id:'life_apt',name:'Страхование жизни Марата',period:'Май',amount:''},
+  {id:'prop_apt',name:'Страхование имущества Марата',period:'Май',amount:''},
+  {id:'life_studio',name:'Страхование жизни студия',period:'Май',amount:''},
+  {id:'prop_studio',name:'Страхование имущества студия',period:'Май',amount:''},
+  {id:'lada_ins',name:'Страхование Lada Granta',period:'Июнь',amount:7000},
+  {id:'prop_tax',name:'Налог на имущество',period:'Октябрь',amount:''},
+  {id:'lada_tax',name:'Налог Lada Granta',period:'Октябрь',amount:''},
+  {id:'tirewash',name:'Шиномонтаж, мойка',period:'По событию',amount:''},
+  {id:'to',name:'ТО',period:'По событию',amount:''}
+ ],
+ life:[
+  {id:'food',name:'Еда',amount:90000},
+  {id:'home',name:'Бытовые товары',amount:23000},
+  {id:'kids',name:'Дети',amount:21000},
+  {id:'fuel',name:'Бензин',amount:12000},
+  {id:'restaurants',name:'Рестики',amount:10000},
+  {id:'nz',name:'НЗ',amount:15000}
+ ],
+ holidays:[
+  {id:'friends',name:'Дни рождения друзей',date:'',amount:30000},
+  {id:'val',name:'День рождения Валюша',date:'',amount:''},
+  {id:'zabava',name:'День рождения Забава',date:'',amount:20000},
+  {id:'alex',name:'День рождения Алексей',date:'',amount:''},
+  {id:'newyear',name:'Подарки НГ',date:'31.12',amount:''},
+  {id:'igor',name:'День рождения Игорь',date:'',amount:''},
+  {id:'inna',name:'День рождения Инна',date:'',amount:''},
+  {id:'feb14',name:'14 февраля',date:'14.02',amount:''},
+  {id:'mar8',name:'8 марта',date:'08.03',amount:''},
+  {id:'yaroslava',name:'День рождения Ярослава',date:'',amount:50000},
+  {id:'albert',name:'День рождения Альберт',date:'',amount:''},
+  {id:'vika',name:'День рождения Вика',date:'',amount:''},
+  {id:'evgeniy',name:'День рождения Евгений',date:'',amount:''},
+  {id:'wedding',name:'День свадьбы',date:'',amount:''},
+  {id:'lenya',name:'День рождения Лёня',date:'',amount:''},
+  {id:'tatiana',name:'День рождения Татьяна',date:'',amount:''},
+  {id:'roma',name:'День рождения Рома',date:'',amount:''},
+  {id:'otherbirth',name:'Фонд день рождения прочие',date:'',amount:50000}
+ ],
+ funds:[
+  {id:'safety',name:'Подушка безопасности',target:1700000,current:'',percent:30},
+  {id:'miss15',name:'Резерв на пропуск дохода 15-го',target:348000,current:'',percent:10},
+  {id:'capitalfund',name:'Капитал',target:'',current:'',percent:25},
+  {id:'vartemyagi',name:'Вартемяги / ремонт',target:2000000,current:'',percent:15},
+  {id:'studiofund',name:'Студия / ремонт и резерв',target:462000,current:'',percent:8},
+  {id:'carfund',name:'Автомобиль',target:2000000,current:'',percent:5},
+  {id:'travel',name:'Путешествия',target:'',current:'',percent:4},
+  {id:'kidsfund',name:'Дети',target:'',current:'',percent:3}
+ ],
+ fundSettings:{year:2026,baseMode:'auto',manualBase:''},
+ bankAccounts:[
+  {id:'sber_apt',bank:'Сбер',name:'Квартира Марата 14',type:'fixed',target:75000,priority:1},
+  {id:'br_studio',bank:'Банк Россия',name:'Студия',type:'fixed',target:35000,priority:2},
+  {id:'raif_family',bank:'Райффайзен',name:'Семейные расходы',type:'fixed',target:171000,priority:3},
+  {id:'t_personal',bank:'Т-Банк',name:'Личные расходы',type:'fixed',target:30000,priority:4},
+  {id:'savings_funds',bank:'Накопительный счёт',name:'Фонды / капитал',type:'remainder',target:'',priority:5}
+ ],
+ bankSettings:{year:2026,month:8}
+};
+
+var state=clone(DEFAULT);
+var DB_NAME='FinancePlannerDB';
+var DB_VERSION=1;
+var DB_STORE='state';
+var DB_KEY='main';
+var db=null;
+var saveTimer=null;
+var ready=false;
+var MIGRATION_KEYS=['financePlannerSimpleV31','financePlannerSimpleV30','financePlannerV2'];
+
+function ensureIncomeYears(){
+ if(!state.history) state.history=historyObject();
+ for(var y=2021;y<=2031;y++){
+  if(!state.history[y]) state.history[y]={};
+  for(var m=1;m<=12;m++){
+   if(!state.history[y][m]) state.history[y][m]=monthRow();
+   COLS.forEach(function(k){
+    if(state.history[y][m][k]===undefined) state.history[y][m][k]='';
+   });
+  }
+ }
+}
+
+
+function ensureFunds(){
+ if(!state.funds)state.funds=clone(DEFAULT.funds);
+ if(!state.fundSettings)state.fundSettings=clone(DEFAULT.fundSettings);
+ if(state.fundSettings.year===undefined)state.fundSettings.year=2026;
+ if(!state.fundSettings.baseMode)state.fundSettings.baseMode='auto';
+ if(state.fundSettings.manualBase===undefined)state.fundSettings.manualBase='';
+}
+
+
+function ensureBankRouting(){
+ if(!state.bankAccounts)state.bankAccounts=clone(DEFAULT.bankAccounts);
+ if(!state.bankSettings)state.bankSettings=clone(DEFAULT.bankSettings);
+ if(state.bankSettings.year===undefined)state.bankSettings.year=2026;
+ if(state.bankSettings.month===undefined)state.bankSettings.month=8;
+ state.bankAccounts.forEach(function(a){
+  if(!a.type)a.type='fixed';
+  if(a.priority===undefined)a.priority=99;
+  if(a.target===undefined)a.target='';
+ });
+}
+
+function openDb(){
+ return new Promise(function(resolve){
+  if(!('indexedDB' in window)){resolve(null);return;}
+  try{
+   var req=indexedDB.open(DB_NAME,DB_VERSION);
+   req.onupgradeneeded=function(){
+    var d=req.result;
+    if(!d.objectStoreNames.contains(DB_STORE))d.createObjectStore(DB_STORE);
+   };
+   req.onsuccess=function(){db=req.result;resolve(db);};
+   req.onerror=function(){resolve(null);};
+  }catch(e){resolve(null);}
+ });
+}
+function dbGet(){
+ return new Promise(function(resolve){
+  if(!db){resolve(null);return;}
+  try{
+   var tx=db.transaction(DB_STORE,'readonly');
+   var req=tx.objectStore(DB_STORE).get(DB_KEY);
+   req.onsuccess=function(){resolve(req.result||null);};
+   req.onerror=function(){resolve(null);};
+  }catch(e){resolve(null);}
+ });
+}
+function dbPut(value){
+ return new Promise(function(resolve){
+  if(!db){resolve(false);return;}
+  try{
+   var tx=db.transaction(DB_STORE,'readwrite');
+   tx.objectStore(DB_STORE).put(value,DB_KEY);
+   tx.oncomplete=function(){resolve(true);};
+   tx.onerror=function(){resolve(false);};
+   tx.onabort=function(){resolve(false);};
+  }catch(e){resolve(false);}
+ });
+}
+function loadMigrationData(){
+ for(var i=0;i<MIGRATION_KEYS.length;i++){
+  try{
+   var raw=localStorage.getItem(MIGRATION_KEYS[i]);
+   if(raw){
+    var parsed=JSON.parse(raw);
+    if(parsed&&typeof parsed==='object')return parsed;
+   }
+  }catch(e){}
+ }
+ return null;
+}
+function saveFallback(){
+ try{
+  localStorage.setItem('financePlannerFallbackV40',JSON.stringify(state));
+  return true;
+ }catch(e){return false;}
+}
+function setStorageStatus(label){
+ var s=document.getElementById('dbStatus');
+ if(s)s.textContent='База: '+label;
+ var t=document.getElementById('lastSavedAt');
+ if(t){
+  var d=new Date();
+  t.textContent='Сохранено '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
+ }
+}
+async function saveNow(){
+ if(!ready)return;
+ ensureIncomeYears();ensureFunds();ensureBankRouting();
+ var dbOk=await dbPut(state);
+ var fallbackOk=saveFallback();
+ if(dbOk)setStorageStatus('IndexedDB');
+ else if(fallbackOk)setStorageStatus('localStorage');
+ else setStorageStatus('ошибка');
+}
+function save(){
+ if(saveTimer)clearTimeout(saveTimer);
+ saveTimer=setTimeout(function(){saveNow();},120);
+}
+async function initStorage(){
+ await openDb();
+ var existing=await dbGet();
+ if(existing&&typeof existing==='object'){
+  state=existing;
+ }else{
+  var migrated=loadMigrationData();
+  state=(migrated&&typeof migrated==='object')?migrated:clone(DEFAULT);
+ }
+ ensureIncomeYears();ensureFunds();ensureBankRouting();
+ if(!state.plan||!Object.keys(state.plan).length)state.plan=makePlan();
+ ready=true;
+ await saveNow();
+ renderAll();
+ registerServiceWorker();
+}
+function registerServiceWorker(){
+ if('serviceWorker' in navigator && (location.protocol==='https:'||location.hostname==='localhost')){
+  navigator.serviceWorker.register('./service-worker.js').catch(function(){});
+ }
+}
+
+function actualHistoryMonths(y){
+ // План 2027–2031 рассчитывается только по фактической базе до августа 2026.
+ if(y<2026)return 12;
+ if(y===2026)return 8;
+ return 0;
+}
+function monthlyAverageForD15(month){
+ var vals=[];
+ for(var y=2021;y<=2026;y++){
+  if(month>actualHistoryMonths(y))continue;
+  var r=state.history[y]&&state.history[y][month];
+  if(!r)continue;
+  vals.push(num(r.d15)); // zero is a real missed payout for actual months
+ }
+ if(!vals.length)return 0;
+ return Math.round(vals.reduce(function(a,b){return a+b;},0)/vals.length);
+}
+function d25Base(){
+ var vals=[];
+ for(var m=1;m<=8;m++){
+  var v=num(state.history[2026][m].d25);
+  if(v>0)vals.push(v); // Aug 25 may be not recorded yet; use completed non-zero 2026 base
+ }
+ return vals.length?Math.round(vals.reduce(function(a,b){return a+b;},0)/vals.length):0;
+}
+function d28Base(){
+ var vals=[];
+ for(var m=1;m<=12;m++) vals.push(num(state.history[2025][m].d28));
+ for(var m2=1;m2<=7;m2++) vals.push(num(state.history[2026][m2].d28)); // 28 Aug has not occurred yet
+ return vals.length?Math.round(vals.reduce(function(a,b){return a+b;},0)/vals.length):0;
+}
+function makePlan(){
+ var p={};
+ var base25=d25Base(),base28=d28Base();
+ for(var y=2027;y<=2031;y++){
+  p[y]={};
+  for(var m=1;m<=12;m++){
+   p[y][m]={
+    benefit:(y===2027&&m<=4)?58000:'',
+    d10:147900+(y-2026)*10000,
+    d15:monthlyAverageForD15(m),
+    d25:base25,
+    d28:(m===2||m===3)?'':base28,
+    studio:(y>2027||(y===2027&&m>=3))?35000:'',
+    other:''
+   };
+  }
+ }
+ return p;
+}
+
+
+function renderCapital(){
+ var gross=0,debt=0,pay=0;
+ assetBody.innerHTML='';
+ state.assets.forEach(function(a){
+  gross+=num(a.value);debt+=num(a.debt);pay+=num(a.payment);
+  assetBody.insertAdjacentHTML('beforeend','<tr>'+
+   '<td><input value="'+escapeHtml(a.name)+'" data-aid="'+a.id+'" data-k="name"></td>'+
+   '<td><input type="number" value="'+valOrBlank(a.value)+'" data-aid="'+a.id+'" data-k="value"></td>'+
+   '<td><input type="number" value="'+valOrBlank(a.debt)+'" data-aid="'+a.id+'" data-k="debt"></td>'+
+   '<td><input type="date" value="'+valOrBlank(a.end)+'" data-aid="'+a.id+'" data-k="end"></td>'+
+   '<td><input type="number" value="'+valOrBlank(a.payment)+'" data-aid="'+a.id+'" data-k="payment"></td>'+
+   '<td class="money"><b>'+rub(num(a.value)-num(a.debt))+'</b></td>'+
+   '<td><button class="danger" data-delasset="'+a.id+'">Удалить</button></td></tr>');
+ });
+ capitalGross.textContent=rub(gross);capitalDebt.textContent=rub(debt);capitalNet.textContent=rub(gross-debt);capitalMonthlyDebt.textContent=rub(pay);
+ assetBody.querySelectorAll('input').forEach(function(el){el.addEventListener('change',function(){
+  var a=state.assets.find(function(x){return x.id===el.dataset.aid;});if(!a)return;
+  a[el.dataset.k]=(el.dataset.k==='name'||el.dataset.k==='end')?el.value:num(el.value);save();renderCapital();
+ });});
+ assetBody.querySelectorAll('[data-delasset]').forEach(function(b){b.addEventListener('click',function(){state.assets=state.assets.filter(function(x){return x.id!==b.dataset.delasset;});save();renderCapital();});});
+}
+function escapeHtml(s){return String(s||'').replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+
+function renderHistory(){
+ historyYear.innerHTML='';
+ for(var y=2021;y<=2031;y++)historyYear.insertAdjacentHTML('beforeend','<option value="'+y+'" '+(y===Number(state.historyYear)?'selected':'')+'>'+y+'</option>');
+ var yy=Number(state.historyYear)||2026,total=0,bestV=-1,bestM=1;
+ historyBody.innerHTML='';
+ for(var m=1;m<=12;m++){
+  var r=state.history[yy][m],rt=sumRow(r);total+=rt;if(rt>bestV){bestV=rt;bestM=m;}
+  historyBody.insertAdjacentHTML('beforeend','<tr><td><b>'+MONTHS[m]+'</b></td>'+
+   COLS.map(function(k){return '<td><input type="number" value="'+valOrBlank(r[k])+'" data-y="'+yy+'" data-m="'+m+'" data-k="'+k+'"></td>';}).join('')+
+   '<td class="money"><b>'+rub(rt)+'</b></td></tr>');
+ }
+ historyTotal.textContent=rub(total);historyAvg.textContent=rub(total/12);historyBestMonth.textContent=bestV>0?MONTHS[bestM]:'—';historyBestValue.textContent=bestV>0?rub(bestV):'';
+ historyBody.querySelectorAll('input').forEach(function(el){el.addEventListener('change',function(){
+  var y=Number(el.dataset.y),m=Number(el.dataset.m),k=el.dataset.k;
+  state.history[y][m][k]=el.value===''?'':num(el.value);save();renderHistory();
+ });});
+ renderHistoryStats();
+}
+function renderHistoryStats(){
+ historyStatsBody.innerHTML='';
+ for(var y=2021;y<=2031;y++){
+  var t={benefit:0,d10:0,d15:0,d25:0,d28:0,studio:0,other:0};
+  for(var m=1;m<=12;m++)COLS.forEach(function(k){t[k]+=num(state.history[y][m][k]);});
+  var all=Object.values(t).reduce(function(a,b){return a+b;},0);
+  historyStatsBody.insertAdjacentHTML('beforeend','<tr><td><button class="secondary" data-hy="'+y+'">'+y+'</button></td>'+
+   COLS.map(function(k){return '<td>'+rub(t[k])+'</td>';}).join('')+'<td><b>'+rub(all)+'</b></td></tr>');
+ }
+ historyStatsBody.querySelectorAll('[data-hy]').forEach(function(b){b.addEventListener('click',function(){state.historyYear=Number(b.dataset.hy);save();renderHistory();});});
+}
+
+function renderPlan(){
+ planYear.innerHTML='';
+ for(var y=2027;y<=2031;y++)planYear.insertAdjacentHTML('beforeend','<option value="'+y+'" '+(y===Number(state.planYear)?'selected':'')+'>'+y+'</option>');
+ var yy=Number(state.planYear)||2027,total=0;
+ planBody.innerHTML='';
+ for(var m=1;m<=12;m++){
+  var r=state.plan[yy][m],rt=sumRow(r);total+=rt;
+  planBody.insertAdjacentHTML('beforeend','<tr><td><b>'+MONTHS[m]+'</b></td>'+
+   COLS.map(function(k){return '<td><input type="number" value="'+valOrBlank(r[k])+'" data-y="'+yy+'" data-m="'+m+'" data-k="'+k+'"></td>';}).join('')+
+   '<td class="money"><b>'+rub(rt)+'</b></td></tr>');
+ }
+ planTotal.textContent=rub(total);planAvg.textContent=rub(total/12);planD10.textContent=rub(state.plan[yy][1].d10);planD28.textContent=rub(d28Base());
+ planBody.querySelectorAll('input').forEach(function(el){el.addEventListener('change',function(){
+  var y=Number(el.dataset.y),m=Number(el.dataset.m),k=el.dataset.k;
+  state.plan[y][m][k]=el.value===''?'':num(el.value);save();renderPlan();
+ });});
+ renderPlanStats();
+}
+function renderPlanStats(){
+ planStatsBody.innerHTML='';
+ for(var y=2027;y<=2031;y++){
+  var t={benefit:0,d10:0,d15:0,d25:0,d28:0,studio:0,other:0};
+  for(var m=1;m<=12;m++)COLS.forEach(function(k){t[k]+=num(state.plan[y][m][k]);});
+  var all=Object.values(t).reduce(function(a,b){return a+b;},0);
+  planStatsBody.insertAdjacentHTML('beforeend','<tr><td><button class="secondary" data-py="'+y+'">'+y+'</button></td>'+
+   COLS.map(function(k){return '<td>'+rub(t[k])+'</td>';}).join('')+'<td><b>'+rub(all)+'</b></td></tr>');
+ }
+ planStatsBody.querySelectorAll('[data-py]').forEach(function(b){b.addEventListener('click',function(){state.planYear=Number(b.dataset.py);save();renderPlan();});});
+}
+
+function isMonthlyPeriod(p){return p==='Ежемесячно';}
+function isAnnualPeriod(p){return p==='Май'||p==='Июнь'||p==='Октябрь'||p==='По событию';}
+function mandatoryById(id){return state.mandatory.find(function(x){return x.id===id;});}
+function isBlankMandatory(id){
+ var x=mandatoryById(id);
+ return !x || x.amount==='' || x.amount===null || x.amount===undefined;
+}
+function knownUnsplitMandatory(){
+ var monthly=0,annual=0,notes=[];
+ // Earlier source data had one combined 3,000 ₽ line for Internet/communications.
+ if(isBlankMandatory('net_apt')&&isBlankMandatory('mobile_a')&&isBlankMandatory('mobile_v')){
+  monthly+=3000;notes.push('Связь 3 000 ₽/мес.');
+ }
+ // Earlier source data had combined insurance/tax totals, not a split between the new rows.
+ if(isBlankMandatory('life_apt')&&isBlankMandatory('prop_apt')){
+  annual+=25000;notes.push('Страхование Марата 25 000 ₽');
+ }
+ if(isBlankMandatory('life_studio')&&isBlankMandatory('prop_studio')){
+  annual+=27500;notes.push('Страхование студии 27 500 ₽');
+ }
+ if(isBlankMandatory('prop_tax')&&isBlankMandatory('lada_tax')){
+  annual+=15000;notes.push('Налоги 15 000 ₽');
+ }
+ return {monthly:monthly,annual:annual,notes:notes};
+}
+function renderMandatory(){
+ mandatoryBody.innerHTML='';var monthly=0,annual=0;
+ state.mandatory.forEach(function(x){
+  if(isMonthlyPeriod(x.period))monthly+=num(x.amount);else annual+=num(x.amount);
+  mandatoryBody.insertAdjacentHTML('beforeend','<tr>'+
+   '<td><input value="'+escapeHtml(x.name)+'" data-mid="'+x.id+'" data-mk="name"></td>'+
+   '<td><select data-mid="'+x.id+'" data-mk="period">'+
+    ['Ежемесячно','Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь','По событию'].map(function(p){return '<option '+(p===x.period?'selected':'')+'>'+p+'</option>';}).join('')+
+   '</select></td>'+
+   '<td><input type="number" value="'+valOrBlank(x.amount)+'" data-mid="'+x.id+'" data-mk="amount"></td>'+
+   '<td><button class="danger" data-delmandatory="'+x.id+'">Удалить</button></td></tr>');
+ });
+ var unsplit=knownUnsplitMandatory();
+ monthly+=unsplit.monthly;annual+=unsplit.annual;
+ mandatoryMonthly.textContent=rub(monthly);mandatoryAnnual.textContent=rub(annual);mandatoryYearTotal.textContent=rub(monthly*12+annual);mandatoryCount.textContent=state.mandatory.length;
+ mandatoryBody.querySelectorAll('input,select').forEach(function(el){el.addEventListener('change',function(){
+  var x=state.mandatory.find(function(a){return a.id===el.dataset.mid;});if(!x)return;
+  x[el.dataset.mk]=el.dataset.mk==='amount'?(el.value===''?'':num(el.value)):el.value;save();renderMandatory();
+ });});
+ mandatoryBody.querySelectorAll('[data-delmandatory]').forEach(function(b){b.addEventListener('click',function(){
+  state.mandatory=state.mandatory.filter(function(x){return x.id!==b.dataset.delmandatory;});save();renderMandatory();
+ });});
+}
+function renderLife(){
+ lifeBody.innerHTML='';var total=0;
+ state.life.forEach(function(x){total+=num(x.amount);lifeBody.insertAdjacentHTML('beforeend','<tr>'+
+  '<td><input value="'+escapeHtml(x.name)+'" data-lid="'+x.id+'" data-lk="name"></td>'+
+  '<td><input type="number" value="'+valOrBlank(x.amount)+'" data-lid="'+x.id+'" data-lk="amount"></td>'+
+  '<td><button class="danger" data-dellife="'+x.id+'">Удалить</button></td></tr>');});
+ lifeMonthly.textContent=rub(total);lifeAnnual.textContent=rub(total*12);lifeCount.textContent=state.life.length;
+ var nz=state.life.find(function(x){return x.id==='nz';});lifeNz.textContent=rub(nz?num(nz.amount):0);
+ lifeBody.querySelectorAll('input').forEach(function(el){el.addEventListener('change',function(){
+  var x=state.life.find(function(a){return a.id===el.dataset.lid;});if(!x)return;
+  x[el.dataset.lk]=el.dataset.lk==='amount'?(el.value===''?'':num(el.value)):el.value;save();renderLife();
+ });});
+ lifeBody.querySelectorAll('[data-dellife]').forEach(function(b){b.addEventListener('click',function(){
+  state.life=state.life.filter(function(x){return x.id!==b.dataset.dellife;});save();renderLife();
+ });});
+}
+function renderHolidays(){
+ holidayBody.innerHTML='';var total=0,dates=0,withAmount=0;
+ state.holidays.forEach(function(x){total+=num(x.amount);if(x.date)dates++;if(num(x.amount)>0)withAmount++;
+  holidayBody.insertAdjacentHTML('beforeend','<tr>'+
+   '<td><input value="'+escapeHtml(x.name)+'" data-hid="'+x.id+'" data-hk="name"></td>'+
+   '<td><input value="'+escapeHtml(x.date)+'" placeholder="ДД.ММ" data-hid="'+x.id+'" data-hk="date"></td>'+
+   '<td><input type="number" value="'+valOrBlank(x.amount)+'" data-hid="'+x.id+'" data-hk="amount"></td>'+
+   '<td><button class="danger" data-delholiday="'+x.id+'">Удалить</button></td></tr>');
+ });
+ holidayTotal.textContent=rub(total);holidayCount.textContent=state.holidays.length;holidayAvg.textContent=rub(withAmount?total/withAmount:0);holidayDates.textContent=dates+' / '+state.holidays.length;
+ holidayBody.querySelectorAll('input').forEach(function(el){el.addEventListener('change',function(){var x=state.holidays.find(function(a){return a.id===el.dataset.hid;});if(x){x[el.dataset.hk]=el.dataset.hk==='amount'?(el.value===''?'':num(el.value)):el.value;save();renderHolidays();}});});
+ holidayBody.querySelectorAll('[data-delholiday]').forEach(function(b){b.addEventListener('click',function(){
+  state.holidays=state.holidays.filter(function(x){return x.id!==b.dataset.delholiday;});save();renderHolidays();
+ });});
+}
+
+
+function fundMonthIncomeRow(y,m){
+ var hr=state.history&&state.history[y]&&state.history[y][m];
+ if(hr&&sumRow(hr)>0)return {row:hr,source:'факт'};
+ var pr=state.plan&&state.plan[y]&&state.plan[y][m];
+ if(pr&&sumRow(pr)>0)return {row:pr,source:'план'};
+ return {row:monthRow(),source:'пусто'};
+}
+function monthlyMandatoryForFunds(m){
+ var total=0;
+ state.mandatory.forEach(function(x){
+  if(x.period==='Ежемесячно')total+=num(x.amount);
+  else if(x.period===MONTHS[m])total+=num(x.amount);
+ });
+ // Known combined amounts that were not split into the newer rows.
+ if(isBlankMandatory('net_apt')&&isBlankMandatory('mobile_a')&&isBlankMandatory('mobile_v'))total+=3000;
+ if(m===5){
+  if(isBlankMandatory('life_apt')&&isBlankMandatory('prop_apt'))total+=25000;
+  if(isBlankMandatory('life_studio')&&isBlankMandatory('prop_studio'))total+=27500;
+ }
+ if(m===10&&isBlankMandatory('prop_tax')&&isBlankMandatory('lada_tax'))total+=15000;
+ return total;
+}
+function fundMonthData(y,m){
+ var incInfo=fundMonthIncomeRow(y,m);
+ var income=sumRow(incInfo.row);
+ var mandatory=monthlyMandatoryForFunds(m);
+ var balance=income-mandatory;
+ var distributable=Math.max(0,balance);
+ var totalPct=state.funds.reduce(function(s,x){return s+num(x.percent);},0);
+ var allocations={};
+ state.funds.forEach(function(f){allocations[f.id]=distributable*num(f.percent)/100;});
+ var allocated=Object.keys(allocations).reduce(function(s,k){return s+allocations[k];},0);
+ return {
+  income:income,mandatory:mandatory,balance:balance,distributable:distributable,
+  source:incInfo.source,allocations:allocations,allocated:allocated,
+  unallocated:distributable-allocated,totalPct:totalPct
+ };
+}
+function renderFunds(){
+ ensureFunds();
+ fundYear.innerHTML='';
+ for(var y=2026;y<=2031;y++){
+  fundYear.insertAdjacentHTML('beforeend','<option value="'+y+'" '+(y===Number(state.fundSettings.year)?'selected':'')+'>'+y+'</option>');
+ }
+ var yy=Number(state.fundSettings.year)||2026;
+ var pct=state.funds.reduce(function(s,x){return s+num(x.percent);},0);
+ fundPercentTotal.textContent=(Math.round(pct*10)/10)+'%';
+ fundPercentStatus.textContent=Math.abs(pct-100)<0.01?'100% — весь остаток распределяется':'Нужно довести до 100%';
+ fundPercentStatus.className='ksmall '+(Math.abs(pct-100)<0.01?'ok':'warn');
+
+ var head='<tr><th>Месяц</th><th>Источник</th><th>Доход</th><th>Обязательные</th><th>Остаток</th>';
+ state.funds.forEach(function(f){head+='<th>'+escapeHtml(f.name)+'<br><span class="small">'+num(f.percent)+'%</span></th>';});
+ head+='<th>Нераспределено</th></tr>';
+ fundMonthlyHead.innerHTML=head;
+
+ fundMonthlyBody.innerHTML='';
+ var totalIncome=0,totalMandatory=0,totalFree=0;
+ var fundYearTotals={};state.funds.forEach(function(f){fundYearTotals[f.id]=0;});
+ var sourceCounts={факт:0,план:0,пусто:0};
+
+ for(var m=1;m<=12;m++){
+  var d=fundMonthData(yy,m);
+  totalIncome+=d.income;totalMandatory+=d.mandatory;totalFree+=d.distributable;
+  sourceCounts[d.source]=(sourceCounts[d.source]||0)+1;
+  var row='<tr><td><b>'+MONTHS[m]+'</b></td><td><span class="badge">'+d.source+'</span></td>'+
+   '<td class="money">'+rub(d.income)+'</td><td class="money">'+rub(d.mandatory)+'</td>'+
+   '<td class="money"><b class="'+(d.balance>=0?'good':'bad')+'">'+rub(d.balance)+'</b></td>';
+  state.funds.forEach(function(f){
+   var a=d.allocations[f.id]||0;fundYearTotals[f.id]+=a;
+   row+='<td class="money">'+rub(a)+'</td>';
+  });
+  row+='<td class="money">'+rub(d.unallocated)+'</td></tr>';
+  fundMonthlyBody.insertAdjacentHTML('beforeend',row);
+ }
+
+ var foot='<tr><th>Итого</th><th></th><th>'+rub(totalIncome)+'</th><th>'+rub(totalMandatory)+'</th><th>'+rub(totalFree)+'</th>';
+ state.funds.forEach(function(f){foot+='<th>'+rub(fundYearTotals[f.id]||0)+'</th>';});
+ foot+='<th>'+rub(totalFree-Object.keys(fundYearTotals).reduce(function(s,k){return s+fundYearTotals[k];},0))+'</th></tr>';
+ fundMonthlyFoot.innerHTML=foot;
+
+ fundIncomeYear.textContent=rub(totalIncome);
+ fundMandatoryYear.textContent=rub(totalMandatory);
+ fundFreeYear.textContent=rub(totalFree);
+ var src=[];
+ if(sourceCounts['факт'])src.push('факт '+sourceCounts['факт']+' мес.');
+ if(sourceCounts['план'])src.push('план '+sourceCounts['план']+' мес.');
+ if(sourceCounts['пусто'])src.push('пусто '+sourceCounts['пусто']+' мес.');
+ fundIncomeSource.textContent=src.join(' · ');
+
+ fundBody.innerHTML='';
+ state.funds.forEach(function(x){
+  var target=num(x.target),current=num(x.current),progress=target>0?Math.min(100,Math.max(0,current/target*100)):0;
+  fundBody.insertAdjacentHTML('beforeend','<tr>'+
+   '<td><input value="'+escapeHtml(x.name)+'" data-fid="'+x.id+'" data-fk="name"></td>'+
+   '<td><input type="number" value="'+valOrBlank(x.target)+'" data-fid="'+x.id+'" data-fk="target"></td>'+
+   '<td><input type="number" value="'+valOrBlank(x.current)+'" data-fid="'+x.id+'" data-fk="current"></td>'+
+   '<td><input type="number" min="0" max="100" step="1" value="'+valOrBlank(x.percent)+'" data-fid="'+x.id+'" data-fk="percent"></td>'+
+   '<td class="money"><b>'+rub(fundYearTotals[x.id]||0)+'</b></td>'+
+   '<td><div class="progress"><span style="width:'+progress+'%"></span></div><div class="ksmall">'+(target>0?Math.round(progress)+'%':'—')+'</div></td>'+
+   '<td><button class="danger" data-delfund="'+x.id+'">Удалить</button></td></tr>');
+ });
+ fundBody.querySelectorAll('input').forEach(function(el){el.addEventListener('change',function(){
+  var x=state.funds.find(function(a){return a.id===el.dataset.fid;});if(!x)return;
+  x[el.dataset.fk]=el.dataset.fk==='name'?el.value:(el.value===''?'':num(el.value));
+  save();renderFunds();
+ });});
+ fundBody.querySelectorAll('[data-delfund]').forEach(function(b){b.addEventListener('click',function(){
+  state.funds=state.funds.filter(function(x){return x.id!==b.dataset.delfund;});save();renderFunds();
+ });});
+}
+
+
+function bankIncomeForMonth(y,m){
+ var info=fundMonthIncomeRow(y,m);
+ return {income:sumRow(info.row),source:info.source};
+}
+function sortedBankAccounts(){
+ return state.bankAccounts.slice().sort(function(a,b){return num(a.priority)-num(b.priority);});
+}
+function bankRouteForMonth(y,m){
+ var inc=bankIncomeForMonth(y,m),remaining=inc.income,items=[];
+ var accounts=sortedBankAccounts();
+ accounts.forEach(function(a){
+  var desired=a.type==='remainder'?Math.max(0,remaining):Math.max(0,num(a.target));
+  var amount=Math.min(Math.max(0,remaining),desired);
+  var shortfall=Math.max(0,desired-amount);
+  remaining-=amount;
+  items.push({id:a.id,desired:desired,amount:amount,shortfall:shortfall});
+ });
+ return {income:inc.income,source:inc.source,items:items,remaining:remaining};
+}
+function renderBanks(){
+ ensureBankRouting();
+
+ bankYear.innerHTML='';
+ for(var y=2026;y<=2031;y++)bankYear.insertAdjacentHTML('beforeend','<option value="'+y+'" '+(y===Number(state.bankSettings.year)?'selected':'')+'>'+y+'</option>');
+ bankMonth.innerHTML='';
+ for(var m=1;m<=12;m++)bankMonth.insertAdjacentHTML('beforeend','<option value="'+m+'" '+(m===Number(state.bankSettings.month)?'selected':'')+'>'+MONTHS[m]+'</option>');
+
+ var yy=Number(state.bankSettings.year)||2026,mm=Number(state.bankSettings.month)||1;
+ var route=bankRouteForMonth(yy,mm);
+ var planned=state.bankAccounts.reduce(function(s,a){return s+(a.type==='fixed'?num(a.target):0);},0);
+ var allocated=route.items.reduce(function(s,x){return s+x.amount;},0);
+ var shortfall=route.items.reduce(function(s,x){return s+x.shortfall;},0);
+
+ bankIncome.textContent=rub(route.income);
+ bankIncomeSource.textContent=route.source;
+ bankPlanned.textContent=rub(planned);
+ bankAllocated.textContent=rub(allocated);
+ if(shortfall>0){
+  bankGap.textContent='− '+rub(shortfall);
+  bankGap.className='kval bad';
+  bankGapNote.textContent='не хватает для заданных лимитов';
+ }else{
+  bankGap.textContent=rub(route.remaining);
+  bankGap.className='kval good';
+  bankGapNote.textContent=route.remaining>0?'остаётся после всех переводов':'весь доход распределён';
+ }
+
+ var routeById={};route.items.forEach(function(x){routeById[x.id]=x;});
+ bankBody.innerHTML='';
+ sortedBankAccounts().forEach(function(a){
+  var r=routeById[a.id]||{amount:0,shortfall:0};
+  bankBody.insertAdjacentHTML('beforeend','<tr>'+
+   '<td><input class="bank-priority" type="number" min="1" value="'+valOrBlank(a.priority)+'" data-bid="'+a.id+'" data-bk="priority"></td>'+
+   '<td><input value="'+escapeHtml(a.bank)+'" data-bid="'+a.id+'" data-bk="bank"></td>'+
+   '<td><input value="'+escapeHtml(a.name)+'" data-bid="'+a.id+'" data-bk="name"></td>'+
+   '<td><select data-bid="'+a.id+'" data-bk="type"><option value="fixed" '+(a.type==='fixed'?'selected':'')+'>Фиксированный</option><option value="remainder" '+(a.type==='remainder'?'selected':'')+'>Остаток</option></select></td>'+
+   '<td><input type="number" '+(a.type==='remainder'?'disabled':'')+' value="'+(a.type==='remainder'?'':valOrBlank(a.target))+'" data-bid="'+a.id+'" data-bk="target"></td>'+
+   '<td class="money"><b>'+rub(r.amount)+'</b></td>'+
+   '<td class="money '+(r.shortfall>0?'bank-short':'bank-ok')+'">'+(r.shortfall>0?rub(r.shortfall):'0 ₽')+'</td>'+
+   '<td><button class="danger" data-delbank="'+a.id+'">Удалить</button></td></tr>');
+ });
+
+ bankBody.querySelectorAll('input,select').forEach(function(el){el.addEventListener('change',function(){
+  var a=state.bankAccounts.find(function(x){return x.id===el.dataset.bid;});if(!a)return;
+  var k=el.dataset.bk;
+  if(k==='priority'||k==='target')a[k]=el.value===''?'':num(el.value);else a[k]=el.value;
+  if(k==='type'&&el.value==='remainder')a.target='';
+  save();renderBanks();
+ });});
+ bankBody.querySelectorAll('[data-delbank]').forEach(function(b){b.addEventListener('click',function(){
+  state.bankAccounts=state.bankAccounts.filter(function(x){return x.id!==b.dataset.delbank;});save();renderBanks();
+ });});
+
+ // Year table
+ var accounts=sortedBankAccounts();
+ var head='<tr><th>Месяц</th><th>Доход</th>';
+ accounts.forEach(function(a){head+='<th>'+escapeHtml(a.bank)+'<br><span class="small">'+escapeHtml(a.name)+'</span></th>';});
+ head+='<th>Остаток</th></tr>';bankYearHead.innerHTML=head;
+
+ bankYearBody.innerHTML='';
+ var totals={income:0,remaining:0};accounts.forEach(function(a){totals[a.id]=0;});
+ for(var mon=1;mon<=12;mon++){
+  var rr=bankRouteForMonth(yy,mon);totals.income+=rr.income;totals.remaining+=rr.remaining;
+  var by={};rr.items.forEach(function(x){by[x.id]=x.amount;});
+  var tr='<tr><td><b>'+MONTHS[mon]+'</b></td><td class="money">'+rub(rr.income)+'</td>';
+  accounts.forEach(function(a){totals[a.id]+=num(by[a.id]);tr+='<td class="money">'+rub(by[a.id])+'</td>';});
+  tr+='<td class="money">'+rub(rr.remaining)+'</td></tr>';
+  bankYearBody.insertAdjacentHTML('beforeend',tr);
+ }
+ var foot='<tr><th>Итого</th><th>'+rub(totals.income)+'</th>';
+ accounts.forEach(function(a){foot+='<th>'+rub(totals[a.id])+'</th>';});
+ foot+='<th>'+rub(totals.remaining)+'</th></tr>';bankYearFoot.innerHTML=foot;
+}
+
+function renderAll(){renderCapital();renderHistory();renderPlan();renderMandatory();renderLife();renderHolidays();renderFunds();renderBanks();}
+
+document.querySelectorAll('.tab').forEach(function(b){b.addEventListener('click',function(){
+ document.querySelectorAll('.tab').forEach(function(x){x.classList.remove('active');});
+ document.querySelectorAll('section').forEach(function(x){x.classList.remove('active');});
+ b.classList.add('active');document.getElementById(b.dataset.tab).classList.add('active');
+});});
+historyYear.addEventListener('change',function(){state.historyYear=Number(historyYear.value);save();renderHistory();});
+planYear.addEventListener('change',function(){state.planYear=Number(planYear.value);save();renderPlan();});
+recalcPlan.addEventListener('click',function(){if(confirm('Пересчитать план 2027–2031 по статистике? Ручные изменения плана будут заменены.')){state.plan=makePlan();save();renderPlan();}});
+addAsset.addEventListener('click',function(){
+ var name=assetName.value.trim();if(!name){alert('Укажи название актива');return;}
+ state.assets.push({id:'a'+Date.now(),name:name,value:assetValue.value===''?'':num(assetValue.value),debt:assetDebt.value===''?'':num(assetDebt.value),end:assetEnd.value,payment:assetPayment.value===''?'':num(assetPayment.value)});
+ assetName.value='';assetValue.value='';assetDebt.value='';assetEnd.value='';assetPayment.value='';save();renderCapital();
+});
+
+function backupJson(){
+ var envelope={app:'finance-plan',version:'4.3',exportedAt:new Date().toISOString(),state:state};
+ return JSON.stringify(envelope,null,2);
+}
+function showJson(message){
+ jsonText.value=backupJson();
+ jsonBox.classList.add('show');
+ jsonStatus.textContent=message||'Резервная копия подготовлена.';
+ setTimeout(function(){jsonText.scrollTop=0;},0);
+}
+showJsonBtn.addEventListener('click',function(){showJson('JSON показан ниже. Его можно выделить и скопировать.');});
+hideJsonBtn.addEventListener('click',function(){jsonBox.classList.remove('show');jsonStatus.textContent='';});
+selectJsonBtn.addEventListener('click',function(){jsonText.focus();jsonText.select();jsonText.setSelectionRange(0,jsonText.value.length);jsonStatus.textContent='Весь JSON выделен.';});
+copyJsonBtn.addEventListener('click',async function(){
+ jsonText.value=backupJson();
+ try{
+  if(navigator.clipboard && window.isSecureContext){
+   await navigator.clipboard.writeText(jsonText.value);
+   jsonStatus.textContent='JSON скопирован.';
+  }else{
+   jsonText.focus();jsonText.select();jsonText.setSelectionRange(0,jsonText.value.length);
+   var ok=document.execCommand('copy');
+   jsonStatus.textContent=ok?'JSON скопирован.':'Не удалось скопировать автоматически — текст уже выделен.';
+  }
+ }catch(e){
+  jsonText.focus();jsonText.select();jsonText.setSelectionRange(0,jsonText.value.length);
+  jsonStatus.textContent='Автокопирование недоступно — текст выделен, выбери «Копировать».';
+ }
+});
+exportBtn.addEventListener('click',async function(){
+ var json=backupJson();
+ var file;
+ try{
+  file=new File([json],'finance-plan-v40-data.json',{type:'application/json'});
+ }catch(e){file=null;}
+
+ // Best path on iPhone/iPad: system Share Sheet -> Save to Files.
+ try{
+  if(file && navigator.share && navigator.canShare && navigator.canShare({files:[file]})){
+   await navigator.share({title:'Финансовый план — резервная копия',files:[file]});
+   return;
+  }
+ }catch(e){
+  if(e && e.name==='AbortError')return;
+ }
+
+ // Standard browser download.
+ try{
+  var blob=new Blob([json],{type:'application/json;charset=utf-8'});
+  var url=URL.createObjectURL(blob);
+  var a=document.createElement('a');
+  a.href=url;a.download='finance-plan-v40-data.json';
+  document.body.appendChild(a);a.click();a.remove();
+  setTimeout(function(){URL.revokeObjectURL(url);},1500);
+  showJson('Если файл не появился в «Загрузках», JSON уже показан ниже — его можно скопировать.');
+ }catch(e){
+  showJson('Safari не разрешил скачивание. Скопируй JSON ниже — это полноценная резервная копия.');
+ }
+});
+importBtn.addEventListener('click',function(){importFile.value='';importFile.click();});
+importFile.addEventListener('change',function(){
+ var f=importFile.files&&importFile.files[0];
+ if(!f)return;
+ var reader=new FileReader();
+ reader.onload=function(){
+  try{
+   var incoming=JSON.parse(String(reader.result||''));
+   if(!incoming || typeof incoming!=='object')throw new Error('bad');
+   if(incoming.app==='finance-plan'&&incoming.state)incoming=incoming.state;
+   if(!confirm('Импортировать резервную копию? Текущие данные приложения будут заменены.'))return;
+   state=incoming;
+   if(!state.history)state.history=historyObject();
+   if(!state.plan||!Object.keys(state.plan).length)state.plan=makePlan();
+   save();renderAll();
+   alert('Данные импортированы.');
+  }catch(e){
+   alert('Не удалось прочитать JSON. Выбери файл резервной копии финансового плана.');
+  }
+ };
+ reader.readAsText(f);
+});
+
+
+addMandatory.addEventListener('click',function(){
+ var name=mandatoryNewName.value.trim();
+ if(!name){alert('Укажи название обязательного расхода');return;}
+ state.mandatory.push({
+  id:'m'+Date.now(),
+  name:name,
+  period:mandatoryNewPeriod.value||'Ежемесячно',
+  amount:mandatoryNewAmount.value===''?'':num(mandatoryNewAmount.value)
+ });
+ mandatoryNewName.value='';mandatoryNewAmount.value='';
+ save();renderMandatory();
+});
+addLife.addEventListener('click',function(){
+ var name=lifeNewName.value.trim();
+ if(!name){alert('Укажи название расхода');return;}
+ state.life.push({
+  id:'l'+Date.now(),
+  name:name,
+  amount:lifeNewAmount.value===''?'':num(lifeNewAmount.value)
+ });
+ lifeNewName.value='';lifeNewAmount.value='';
+ save();renderLife();
+});
+addHoliday.addEventListener('click',function(){
+ var name=holidayNewName.value.trim();
+ if(!name){alert('Укажи название события');return;}
+ state.holidays.push({
+  id:'h'+Date.now(),
+  name:name,
+  date:holidayNewDate.value.trim(),
+  amount:holidayNewAmount.value===''?'':num(holidayNewAmount.value)
+ });
+ holidayNewName.value='';holidayNewDate.value='';holidayNewAmount.value='';
+ save();renderHolidays();
+});
+
+
+
+fundYear.addEventListener('change',function(){state.fundSettings.year=Number(fundYear.value);save();renderFunds();});
+addFund.addEventListener('click',function(){
+ var name=fundNewName.value.trim();if(!name){alert('Укажи название фонда');return;}
+ state.funds.push({id:'f'+Date.now(),name:name,target:fundNewTarget.value===''?'':num(fundNewTarget.value),current:fundNewCurrent.value===''?'':num(fundNewCurrent.value),percent:fundNewPercent.value===''?0:num(fundNewPercent.value)});
+ fundNewName.value='';fundNewTarget.value='';fundNewCurrent.value='';fundNewPercent.value='';
+ save();renderFunds();
+});
+normalizeFunds.addEventListener('click',function(){
+ var total=state.funds.reduce(function(s,x){return s+num(x.percent);},0);
+ if(total<=0){alert('Сначала задай проценты фондов');return;}
+ var running=0;
+ state.funds.forEach(function(x,i){
+  if(i===state.funds.length-1)x.percent=Math.max(0,Math.round((100-running)*10)/10);
+  else{x.percent=Math.round((num(x.percent)/total*100)*10)/10;running+=x.percent;}
+ });
+ save();renderFunds();
+});
+
+
+bankYear.addEventListener('change',function(){state.bankSettings.year=Number(bankYear.value);save();renderBanks();});
+bankMonth.addEventListener('change',function(){state.bankSettings.month=Number(bankMonth.value);save();renderBanks();});
+addBankAccount.addEventListener('click',function(){
+ var bank=bankNewBank.value.trim(),name=bankNewName.value.trim();
+ if(!bank||!name){alert('Укажи банк и назначение счёта');return;}
+ var type=bankNewType.value||'fixed';
+ state.bankAccounts.push({
+  id:'b'+Date.now(),bank:bank,name:name,type:type,
+  target:type==='remainder'?'':(bankNewTarget.value===''?'':num(bankNewTarget.value)),
+  priority:bankNewPriority.value===''?99:num(bankNewPriority.value)
+ });
+ bankNewBank.value='';bankNewName.value='';bankNewTarget.value='';bankNewPriority.value='';
+ save();renderBanks();
+});
+
+resetBtn.addEventListener('click',function(){if(confirm('Сбросить все данные к исходной версии 4.3?')){state=clone(DEFAULT);state.plan=makePlan();save();renderAll();}});
+initStorage();
+})();
+</script>
+</body>
+</html>
