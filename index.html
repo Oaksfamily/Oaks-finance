@@ -10,7 +10,7 @@
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
 <meta name="apple-mobile-web-app-title" content="Oaks Finance">
 <meta name="mobile-web-app-capable" content="yes">
-<title>Oaks Finance 6.1</title>
+<title>Oaks Finance 7.1</title>
 <style>
 :root{
  --bg:#f5f5f2;--bg-2:#ffffff;--card:#ffffff;--text:#090909;--muted:#5f5f5f;--line:#d8d8d2;
@@ -214,14 +214,63 @@ tbody tr:hover{background:#fff9db}
  .compact-add-row button{grid-column:1/-1;width:100%}
  .compact-add-row input,.compact-add-row select{font-size:11px;min-height:36px;padding:6px}
 }
+
+/* Monthly expense planning */
+.month-plan-toolbar{display:grid;grid-template-columns:1fr 1fr;gap:8px;align-items:end}
+.month-plan-summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:10px}
+.month-plan-list{margin-top:10px;border:1px solid #ece7c5;border-radius:16px;overflow:hidden;background:#fff}
+.month-plan-head,.month-plan-row{display:grid;grid-template-columns:minmax(0,1fr) 104px 62px 62px;gap:6px;align-items:center}
+.month-plan-head{padding:8px 10px;background:#f7f5ee;font-size:11px;font-weight:800;color:#5b5b62}
+.month-plan-row{padding:8px 10px;border-top:1px solid #efede5}
+.month-plan-name{min-width:0;font-size:12px;line-height:1.2;font-weight:720;overflow-wrap:anywhere}
+.month-plan-meta{font-size:10px;color:#777780;margin-top:3px}
+.month-plan-amount{text-align:right;font-weight:800;font-size:12px;white-space:nowrap}
+.month-plan-check{display:flex;align-items:center;justify-content:center}
+.month-plan-check input{width:22px;height:22px;accent-color:#111}
+.month-plan-check input:disabled{opacity:.55}
+.month-plan-group{padding:7px 10px;background:#fff3a6;border-top:1px solid #eadc87;font-size:11px;font-weight:900;letter-spacing:.02em;text-transform:uppercase}
+.plan-action-row{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px}
+.plan-action-row button{font-size:12px;padding:8px 10px}
+.plan-note{font-size:11px;color:#6b6b72;margin-top:8px}
+@media(max-width:640px){
+ .month-plan-toolbar{grid-template-columns:1fr 1fr}
+ .month-plan-summary{grid-template-columns:1fr 1fr}
+ .month-plan-head,.month-plan-row{grid-template-columns:minmax(0,1fr) 78px 44px 44px;gap:4px;padding-left:7px;padding-right:7px}
+ .month-plan-head{font-size:9px}
+ .month-plan-name{font-size:11px}
+ .month-plan-meta{font-size:9px}
+ .month-plan-amount{font-size:10px}
+ .month-plan-check input{width:20px;height:20px}
+}
+
+
+/* Cloud sync */
+.cloud-status-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:10px 0}
+.cloud-config-grid{display:grid;grid-template-columns:1fr;gap:8px}
+.cloud-config-grid label{display:block;font-size:11px;color:var(--muted);font-weight:750}
+.cloud-config-grid input{margin-top:4px}
+.cloud-actions{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px}
+.cloud-actions button{min-height:40px}
+.cloud-led{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;background:#8b8b92}
+.cloud-led.ok{background:#1f9d55}.cloud-led.warn{background:#d69e00}.cloud-led.bad{background:#c53030}
+.cloud-email{font-weight:800;overflow-wrap:anywhere}
+.cloud-log{padding:10px;border-radius:12px;background:#f7f5ee;font-size:11px;line-height:1.35;min-height:42px;white-space:pre-wrap}
+.cloud-setup-list{margin:8px 0 0 18px;padding:0;font-size:12px;line-height:1.5}
+.cloud-sensitive{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11px}
+@media(max-width:640px){
+ .cloud-status-grid{grid-template-columns:1fr}
+ .cloud-actions{display:grid;grid-template-columns:1fr 1fr}
+ .cloud-actions button{width:100%}
+}
 </style>
 </head>
 <body>
 <div class="app">
 <header>
- <div><h1>Oaks Finance 6.1</h1><div class="sub">Обзор · капитал · доходы · расходы · фонды · банковские счета</div></div>
+ <div><h1>Oaks Finance 7.1</h1><div class="sub">Обзор · капитал · доходы · расходы · фонды · банковские счета</div></div>
  <div class="row">
  <span class="badge" id="dbStatus">База: загрузка…</span>
+ <button class="secondary" id="cloudHeaderBtn" type="button">☁ Локально</button>
  <button class="secondary" id="exportBtn">Резервная копия</button>
  <button class="secondary" id="showJsonBtn">Показать JSON</button>
  <button class="secondary" id="importBtn">Импорт JSON</button>
@@ -234,12 +283,12 @@ tbody tr:hover{background:#fff9db}
  <div class="row space">
   <div>
    <h2 style="margin-bottom:4px">Постоянное хранение данных</h2>
-   <div class="small">Все изменения сохраняются автоматически. Основная база — IndexedDB, резерв — localStorage.</div>
+   <div class="small">Все изменения сохраняются автоматически. Локальная база — IndexedDB, резерв — localStorage. При подключении Supabase данные синхронизируются между устройствами.</div>
   </div>
   <span class="badge" id="lastSavedAt">Загрузка…</span>
  </div>
  <div class="small" style="margin-top:6px">После публикации на одном HTTPS-адресе обновление интерфейса не стирает базу. На iPhone приложение можно добавить на экран Домой.</div>
- <div class="small" style="margin-top:4px"><b>Важно:</b> версия 4.0 хранит данные на текущем устройстве. Для синхронизации iPhone ↔ компьютер потребуется облачная база.</div>
+ <div class="small" style="margin-top:4px"><b>Oaks Finance 7.1:</b> локальная база остаётся резервом, а Supabase может стать общей базой для iPhone, Mac и других устройств.</div>
 </div>
 
 <div class="menu-screen"><div class="tabs">
@@ -247,11 +296,13 @@ tbody tr:hover{background:#fff9db}
  <button class="tab" data-tab="capital"><span class="tab-tile">◫</span><span class="tab-label">Капитал</span></button>
  <button class="tab" data-tab="income"><span class="tab-tile">↓</span><span class="tab-label">Доход</span></button>
  <button class="tab" data-tab="incomeplan"><span class="tab-tile">▤</span><span class="tab-label">Доход план</span></button>
+ <button class="tab" data-tab="monthplan"><span class="tab-tile">☷</span><span class="tab-label">План месяца</span></button>
  <button class="tab" data-tab="mandatory"><span class="tab-tile">☑</span><span class="tab-label">Обязательные платежи</span></button>
  <button class="tab" data-tab="life"><span class="tab-tile">◌</span><span class="tab-label">Расход жизнь</span></button>
  <button class="tab" data-tab="holidays"><span class="tab-tile">✦</span><span class="tab-label">Расход праздники</span></button>
  <button class="tab" data-tab="funds"><span class="tab-tile">◔</span><span class="tab-label">Фонды</span></button>
  <button class="tab" data-tab="banks"><span class="tab-tile">↔</span><span class="tab-label">Счета банков</span></button>
+ <button class="tab" data-tab="cloud"><span class="tab-tile">☁</span><span class="tab-label">Облако</span></button>
 </div></div>
 
 <div class="card panel-muted" id="backupCard" style="margin-bottom:10px">
@@ -450,6 +501,49 @@ tbody tr:hover{background:#fff9db}
   <div class="scroll"><table style="min-width:980px"><thead><tr><th>Год</th><th>Пособие</th><th>10 день</th><th>15 день</th><th>25 день</th><th>28 день</th><th>Студия</th><th>Прочие</th><th>Итого</th></tr></thead><tbody id="planStatsBody"></tbody></table></div>
  </div>
 </section>
+
+<section id="monthplan">
+ <div class="page-home-wrap">
+  <button class="home-btn" type="button" data-home>⌂ Домой</button>
+  <span class="page-caption">Oaks Finance</span>
+ </div>
+ <div class="card">
+  <div>
+   <h2>Доход / план на месяц</h2>
+   <div class="small">Выбери месяц и отметь, какие расходы учитывать. «Год» включает расход во все 12 месяцев выбранного года.</div>
+  </div>
+
+  <div class="month-plan-toolbar" style="margin-top:10px">
+   <label class="small">Год<select id="expensePlanYear"></select></label>
+   <label class="small">Месяц<select id="expensePlanMonth"></select></label>
+  </div>
+
+  <div class="month-plan-summary">
+   <div class="card metric-card"><div class="klabel">Доход месяца</div><div class="kval" id="expensePlanIncome">—</div><div class="ksmall" id="expensePlanIncomeSource"></div></div>
+   <div class="card metric-card"><div class="klabel">Выбранные расходы</div><div class="kval bad" id="expensePlanTotal">—</div></div>
+   <div class="card metric-card"><div class="klabel">Обязательные</div><div class="kval" id="expensePlanMandatory">—</div></div>
+   <div class="card metric-card"><div class="klabel">После расходов</div><div class="kval good" id="expensePlanRemainder">—</div></div>
+  </div>
+
+  <div class="plan-action-row">
+   <button id="planMandatoryYearBtn" type="button">Обязательные на весь год</button>
+   <button id="planLifeYearBtn" type="button" class="secondary">Жизнь на весь год</button>
+   <button id="planClearMonthBtn" type="button" class="secondary">Снять ручные галки месяца</button>
+  </div>
+
+  <div class="plan-note">
+   «Мес.» — расход только в выбранном месяце. «Год» — расход учитывается автоматически каждый месяц выбранного года.
+  </div>
+
+  <div class="month-plan-list">
+   <div class="month-plan-head">
+    <div>Расход</div><div style="text-align:right">Сумма</div><div style="text-align:center">Мес.</div><div style="text-align:center">Год</div>
+   </div>
+   <div id="expensePlanBody"></div>
+  </div>
+ </div>
+</section>
+
 
 <section id="mandatory">
  <div class="page-home-wrap">
@@ -684,6 +778,69 @@ tbody tr:hover{background:#fff9db}
 
 </div>
 
+
+<section id="cloud">
+ <div class="page-home-wrap">
+  <button class="home-btn" type="button" data-home>⌂ Домой</button>
+  <span class="page-caption">Oaks Finance</span>
+ </div>
+
+ <div class="card">
+  <div class="row space">
+   <div>
+    <h2>Облачная синхронизация</h2>
+    <div class="small">Одна база данных для всех устройств. IndexedDB на каждом устройстве остаётся локальной резервной копией.</div>
+   </div>
+   <div class="row"><span class="badge">Supabase встроен</span><span class="badge" id="cloudPageBadge"><span class="cloud-led" id="cloudLed"></span><span id="cloudStatusText">Локальный режим</span></span></div>
+  </div>
+
+  <div class="cloud-status-grid">
+   <div class="card metric-card"><div class="klabel">Пользователь</div><div class="cloud-email" id="cloudUserEmail">Не выполнен вход</div></div>
+   <div class="card metric-card"><div class="klabel">Последняя синхронизация</div><div class="cloud-email" id="cloudLastSync">—</div></div>
+   <div class="card metric-card"><div class="klabel">Режим</div><div class="cloud-email" id="cloudMode">Только это устройство</div></div>
+  </div>
+
+  <div class="notice">
+   <b>Supabase уже подключён к Oaks Finance 7.1.</b> Project URL и публичный Publishable key встроены в приложение. Для синхронизации на новом устройстве нужен только вход по e-mail.
+  </div>
+
+  <div class="cloud-config-grid" style="margin-top:10px">
+   <label>Supabase Project URL
+    <input id="cloudProjectUrl" class="cloud-sensitive" value="https://ozwlnisasawasraqqaot.supabase.co" readonly autocomplete="off" autocapitalize="off">
+   </label>
+   <label>Publishable key / anon public key
+    <input id="cloudAnonKey" class="cloud-sensitive" type="password" value="sb_publishable_aJYPCH2NISEtca_sj-h8bQ_o5xtcFZv" readonly autocomplete="off" autocapitalize="off">
+   </label>
+   <label>E-mail для входа
+    <input id="cloudEmailInput" type="email" placeholder="name@example.com" autocomplete="email" autocapitalize="off">
+   </label>
+  </div>
+
+  <div class="cloud-actions">
+   <button id="cloudSaveConfigBtn" type="button">Проверить подключение</button>
+   <button id="cloudLoginBtn" type="button">Отправить ссылку входа</button>
+   <button id="cloudSyncBtn" type="button" class="secondary">Синхронизировать сейчас</button>
+   <button id="cloudUploadBtn" type="button" class="secondary">Загрузить это устройство → облако</button>
+   <button id="cloudDownloadBtn" type="button" class="secondary">Скачать облако → это устройство</button>
+   <button id="cloudLogoutBtn" type="button" class="secondary">Выйти</button>
+  </div>
+
+  <div class="cloud-log" id="cloudLog" style="margin-top:10px">Supabase настроен. Выполни вход по e-mail, чтобы включить синхронизацию между устройствами.</div>
+ </div>
+
+ <div class="card" style="margin-top:10px">
+  <h2>Что осталось настроить один раз</h2>
+  <ol class="cloud-setup-list">
+   <li>В Supabase → SQL Editor выполни файл <b>supabase-setup.sql</b> из пакета Oaks Finance 7.1.</li>
+   <li>В Authentication → URL Configuration укажи <b>https://oaksfamily.github.io/Oaks-finance/</b> как Site URL и добавь его в Redirect URLs.</li>
+   <li>В Oaks Finance укажи e-mail и нажми «Отправить ссылку входа».</li>
+   <li>На устройстве, где сейчас самые актуальные данные, один раз нажми «Загрузить это устройство → облако».</li>
+  </ol>
+  <div class="small" style="margin-top:8px">После этого другие устройства с тем же входом будут получать общую актуальную базу автоматически. IndexedDB продолжает работать как локальная резервная копия.</div>
+ </div>
+</section>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 (function(){
 'use strict';
@@ -816,7 +973,9 @@ var DEFAULT={
   {id:'savings_funds',bank:'Накопительный счёт',name:'Фонды / капитал',type:'remainder',target:'',priority:5}
  ],
  bankSettings:{year:2026,month:8},
- overviewSettings:{year:2026,month:8}
+ overviewSettings:{year:2026,month:8},
+ expensePlanSettings:{year:2026,month:9},
+ expensePlan:{annual:{},monthly:{}}
 };
 
 var state=clone(DEFAULT);
@@ -828,6 +987,11 @@ var db=null;
 var saveTimer=null;
 var globalRefreshTimer=null;
 var ready=false;
+var CLOUD_CONFIG_KEY='oaksFinanceCloudConfigV70';
+var CLOUD_TABLE='oaks_finance_state';
+var EMBEDDED_SUPABASE_URL='https://ozwlnisasawasraqqaot.supabase.co';
+var EMBEDDED_SUPABASE_KEY='sb_publishable_aJYPCH2NISEtca_sj-h8bQ_o5xtcFZv';
+var cloud={client:null,user:null,channel:null,status:'local',applyingRemote:false,pushTimer:null,lastSync:'',initialized:false};
 var MIGRATION_KEYS=['financePlannerSimpleV31','financePlannerSimpleV30','financePlannerV2'];
 
 function ensureIncomeYears(){
@@ -878,6 +1042,37 @@ function ensureOverviewSettings(){
  if(!state.overviewSettings)state.overviewSettings=clone(DEFAULT.overviewSettings);
  if(state.overviewSettings.year===undefined)state.overviewSettings.year=2026;
  if(state.overviewSettings.month===undefined)state.overviewSettings.month=8;
+}
+
+function ensureExpensePlan(){
+ if(!state.expensePlanSettings)state.expensePlanSettings=clone(DEFAULT.expensePlanSettings);
+ if(state.expensePlanSettings.year===undefined)state.expensePlanSettings.year=2026;
+ if(state.expensePlanSettings.month===undefined)state.expensePlanSettings.month=9;
+ if(!state.expensePlan)state.expensePlan={annual:{},monthly:{}};
+ if(!state.expensePlan.annual)state.expensePlan.annual={};
+ if(!state.expensePlan.monthly)state.expensePlan.monthly={};
+}
+
+function getOrCreateDeviceId(){
+ var key='oaksFinanceDeviceIdV70';
+ try{
+  var existing=localStorage.getItem(key);
+  if(existing)return existing;
+  var id='dev_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,10);
+  localStorage.setItem(key,id);return id;
+ }catch(e){return 'device';}
+}
+function ensureSyncMeta(){
+ if(!state._sync||typeof state._sync!=='object')state._sync={};
+ if(!state._sync.modifiedAt)state._sync.modifiedAt='';
+ if(!state._sync.deviceId)state._sync.deviceId=getOrCreateDeviceId();
+ if(!state._sync.appVersion)state._sync.appVersion='7.0';
+}
+function touchSyncMeta(){
+ ensureSyncMeta();
+ state._sync.modifiedAt=new Date().toISOString();
+ state._sync.deviceId=getOrCreateDeviceId();
+ state._sync.appVersion='7.0';
 }
 
 function openDb(){
@@ -944,21 +1139,22 @@ function setStorageStatus(label){
   t.textContent='Сохранено '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
  }
 }
-async function saveNow(){
+async function saveNow(options){
  if(!ready)return;
- ensureIncomeYears();ensureFunds();ensureBankRouting();ensureOverviewSettings();
+ options=options||{};
+ ensureIncomeYears();ensureFunds();ensureBankRouting();ensureOverviewSettings();ensureExpensePlan();ensureSyncMeta();
+ if(options.touch!==false&&!cloud.applyingRemote)touchSyncMeta();
  var dbOk=await dbPut(state);
  var fallbackOk=saveFallback();
  if(dbOk)setStorageStatus('IndexedDB');
  else if(fallbackOk)setStorageStatus('localStorage');
  else setStorageStatus('ошибка');
+ if(options.cloud!==false&&!cloud.applyingRemote)scheduleCloudPush();
 }
 function refreshEverywhere(){
  if(!ready)return;
  if(globalRefreshTimer)clearTimeout(globalRefreshTimer);
- globalRefreshTimer=setTimeout(function(){
-  renderAll();
- },90);
+ globalRefreshTimer=setTimeout(function(){renderAll();renderCloud();},90);
 }
 function save(){
  if(saveTimer)clearTimeout(saveTimer);
@@ -968,24 +1164,229 @@ function save(){
 async function initStorage(){
  await openDb();
  var existing=await dbGet();
- if(existing&&typeof existing==='object'){
-  state=existing;
- }else{
+ if(existing&&typeof existing==='object')state=existing;
+ else{
   var migrated=loadMigrationData();
   state=(migrated&&typeof migrated==='object')?migrated:clone(DEFAULT);
  }
- ensureIncomeYears();ensureFunds();ensureBankRouting();ensureOverviewSettings();
+ ensureIncomeYears();ensureFunds();ensureBankRouting();ensureOverviewSettings();ensureExpensePlan();ensureSyncMeta();
  if(!state.plan||!Object.keys(state.plan).length)state.plan=makePlan();
  ready=true;
- await saveNow();
- renderAll();
+ await saveNow({touch:false,cloud:false});
+ renderAll();renderCloud();
  registerServiceWorker();
+ setTimeout(function(){initCloud();},0);
 }
 function registerServiceWorker(){
  if('serviceWorker' in navigator && (location.protocol==='https:'||location.hostname==='localhost')){
   navigator.serviceWorker.register('./service-worker.js').catch(function(){});
  }
 }
+
+
+function getCloudConfig(){
+ var cfg={url:EMBEDDED_SUPABASE_URL,key:EMBEDDED_SUPABASE_KEY,email:''};
+ try{
+  var raw=localStorage.getItem(CLOUD_CONFIG_KEY);
+  if(raw){
+   var x=JSON.parse(raw);
+   if(x&&typeof x==='object'){
+    if(x.email)cfg.email=x.email;
+    if(x.url)cfg.url=x.url;
+    if(x.key)cfg.key=x.key;
+   }
+  }
+ }catch(e){}
+ if(!cfg.url)cfg.url=EMBEDDED_SUPABASE_URL;
+ if(!cfg.key)cfg.key=EMBEDDED_SUPABASE_KEY;
+ return cfg;
+}
+function storeCloudConfig(cfg){
+ try{localStorage.setItem(CLOUD_CONFIG_KEY,JSON.stringify(cfg));return true;}catch(e){return false;}
+}
+function cleanCloudUrl(v){return String(v||'').trim().replace(/\/+$/,'');}
+function setCloudLog(msg){
+ var el=document.getElementById('cloudLog');if(el)el.textContent=msg||'';
+}
+function cloudTimeLabel(iso){
+ if(!iso)return '—';
+ var d=new Date(iso);if(isNaN(d.getTime()))return '—';
+ return d.toLocaleString('ru-RU',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
+}
+function setCloudStatus(status,message){
+ cloud.status=status||'local';
+ var label='Локально',cls='';
+ if(status==='synced'){label='Синхронизировано';cls='ok';}
+ else if(status==='syncing'){label='Синхронизация…';cls='warn';}
+ else if(status==='offline'){label='Нет сети';cls='warn';}
+ else if(status==='error'){label='Ошибка облака';cls='bad';}
+ else if(status==='auth'){label='Нужен вход';cls='warn';}
+ else if(status==='configured'){label='Облако готово';cls='warn';}
+ var hb=document.getElementById('cloudHeaderBtn');if(hb)hb.textContent='☁ '+label;
+ var st=document.getElementById('cloudStatusText');if(st)st.textContent=label;
+ var led=document.getElementById('cloudLed');if(led)led.className='cloud-led '+cls;
+ if(message)setCloudLog(message);
+ renderCloudStatusOnly();
+}
+function renderCloudStatusOnly(){
+ var userEl=document.getElementById('cloudUserEmail');if(userEl)userEl.textContent=cloud.user&&cloud.user.email?cloud.user.email:'Не выполнен вход';
+ var last=document.getElementById('cloudLastSync');if(last)last.textContent=cloudTimeLabel(cloud.lastSync);
+ var mode=document.getElementById('cloudMode');if(mode)mode.textContent=cloud.user?'Облако + локальная копия':'Только это устройство';
+}
+function renderCloud(){
+ var cfg=getCloudConfig();
+ var url=document.getElementById('cloudProjectUrl');if(url&&document.activeElement!==url)url.value=cfg.url||'';
+ var key=document.getElementById('cloudAnonKey');if(key&&document.activeElement!==key)key.value=cfg.key||'';
+ var email=document.getElementById('cloudEmailInput');if(email&&document.activeElement!==email&& !email.value)email.value=cfg.email||'';
+ renderCloudStatusOnly();
+ var login=document.getElementById('cloudLoginBtn');if(login)login.disabled=!(cfg.url&&cfg.key);
+ var sync=document.getElementById('cloudSyncBtn');if(sync)sync.disabled=!cloud.user;
+ var up=document.getElementById('cloudUploadBtn');if(up)up.disabled=!cloud.user;
+ var down=document.getElementById('cloudDownloadBtn');if(down)down.disabled=!cloud.user;
+ var out=document.getElementById('cloudLogoutBtn');if(out)out.disabled=!cloud.user;
+}
+function compareIso(a,b){
+ var aa=Date.parse(a||'')||0,bb=Date.parse(b||'')||0;
+ return aa===bb?0:(aa>bb?1:-1);
+}
+async function initCloud(){
+ if(cloud.initialized)return;
+ cloud.initialized=true;
+ var cfg=getCloudConfig();
+ renderCloud();
+ if(!cfg.url||!cfg.key){setCloudStatus('local','Облако не настроено. Локальные данные сохранены на этом устройстве.');return;}
+ if(!window.supabase||!window.supabase.createClient){setCloudStatus('error','Не удалось загрузить модуль Supabase. Проверь интернет и перезагрузи приложение.');return;}
+ try{
+  cloud.client=window.supabase.createClient(cfg.url,cfg.key,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
+  var sessionRes=await cloud.client.auth.getSession();
+  cloud.user=sessionRes&&sessionRes.data&&sessionRes.data.session?sessionRes.data.session.user:null;
+  cloud.client.auth.onAuthStateChange(function(event,session){
+   var previous=cloud.user&&cloud.user.id;
+   cloud.user=session&&session.user?session.user:null;
+   renderCloud();
+   if(cloud.user&&cloud.user.id!==previous)setTimeout(function(){connectCloudForUser();},0);
+   if(!cloud.user){unsubscribeCloud();setCloudStatus('auth','Подключение сохранено. Выполни вход по e-mail для синхронизации.');}
+  });
+  if(cloud.user)await connectCloudForUser();
+  else setCloudStatus('auth','Supabase подключён. Выполни вход по e-mail.');
+ }catch(e){setCloudStatus('error','Ошибка подключения Supabase: '+(e&&e.message?e.message:e));}
+}
+async function reinitCloud(){
+ unsubscribeCloud();
+ cloud.client=null;cloud.user=null;cloud.initialized=false;
+ await initCloud();
+}
+function unsubscribeCloud(){
+ if(cloud.client&&cloud.channel){try{cloud.client.removeChannel(cloud.channel);}catch(e){}}
+ cloud.channel=null;
+}
+async function connectCloudForUser(){
+ if(!cloud.client||!cloud.user)return;
+ setCloudStatus('syncing','Вход выполнен. Сравниваю локальную и облачную версии…');
+ await syncCloudState();
+ subscribeCloud();
+}
+function subscribeCloud(){
+ if(!cloud.client||!cloud.user)return;
+ unsubscribeCloud();
+ try{
+  cloud.channel=cloud.client.channel('oaks-finance-'+cloud.user.id)
+   .on('postgres_changes',{event:'*',schema:'public',table:CLOUD_TABLE,filter:'user_id=eq.'+cloud.user.id},function(payload){
+    var row=payload&&payload.new;
+    if(!row||!row.state)return;
+    var remote=row.state,rm=remote._sync&&remote._sync.modifiedAt?remote._sync.modifiedAt:row.updated_at;
+    var lm=state._sync&&state._sync.modifiedAt?state._sync.modifiedAt:'';
+    if(compareIso(rm,lm)>0)applyRemoteState(remote,row.updated_at,'Обновлено с другого устройства');
+   }).subscribe();
+ }catch(e){setCloudLog('Realtime не запущен: '+(e&&e.message?e.message:e));}
+}
+async function fetchCloudRow(){
+ if(!cloud.client||!cloud.user)return {data:null,error:new Error('Нет входа')};
+ return await cloud.client.from(CLOUD_TABLE).select('user_id,state,updated_at,client_modified_at').eq('user_id',cloud.user.id).maybeSingle();
+}
+async function applyRemoteState(remoteState,serverUpdatedAt,message){
+ if(!remoteState||typeof remoteState!=='object')return false;
+ cloud.applyingRemote=true;
+ try{
+  state=remoteState;
+  ensureIncomeYears();ensureFunds();ensureBankRouting();ensureOverviewSettings();ensureExpensePlan();ensureSyncMeta();
+  if(!state.plan||!Object.keys(state.plan).length)state.plan=makePlan();
+  await dbPut(state);saveFallback();renderAll();
+  cloud.lastSync=serverUpdatedAt||new Date().toISOString();
+  setStorageStatus('IndexedDB + облако');
+  setCloudStatus('synced',message||'Облачные данные загружены.');
+  return true;
+ }finally{cloud.applyingRemote=false;}
+}
+async function pushLocalToCloud(force){
+ if(!cloud.client||!cloud.user)return false;
+ if(!navigator.onLine){setCloudStatus('offline','Нет сети. Изменения сохранены локально и будут отправлены позже.');return false;}
+ ensureSyncMeta();
+ if(!state._sync.modifiedAt)touchSyncMeta();
+ setCloudStatus('syncing','Отправляю изменения в облако…');
+ try{
+  if(!force){
+   var current=await fetchCloudRow();
+   if(current.error&&current.error.code!=='PGRST116')throw current.error;
+   if(current.data&&current.data.state){
+    var rm=current.data.state._sync&&current.data.state._sync.modifiedAt?current.data.state._sync.modifiedAt:current.data.updated_at;
+    var lm=state._sync.modifiedAt;
+    if(compareIso(rm,lm)>0){await applyRemoteState(current.data.state,current.data.updated_at,'Облачная версия была новее и загружена на устройство.');return true;}
+   }
+  }
+  var row={user_id:cloud.user.id,state:state,client_modified_at:state._sync.modifiedAt};
+  var res=await cloud.client.from(CLOUD_TABLE).upsert(row,{onConflict:'user_id'}).select('updated_at').single();
+  if(res.error)throw res.error;
+  cloud.lastSync=res.data&&res.data.updated_at?res.data.updated_at:new Date().toISOString();
+  setCloudStatus('synced','Все изменения сохранены в облаке.');
+  return true;
+ }catch(e){setCloudStatus(navigator.onLine?'error':'offline','Не удалось сохранить в облако: '+(e&&e.message?e.message:e));return false;}
+}
+function scheduleCloudPush(){
+ if(!cloud.user)return;
+ if(cloud.pushTimer)clearTimeout(cloud.pushTimer);
+ cloud.pushTimer=setTimeout(function(){pushLocalToCloud(false);},650);
+}
+async function syncCloudState(){
+ if(!cloud.client||!cloud.user)return false;
+ if(!navigator.onLine){setCloudStatus('offline','Нет сети. Работаю с локальной копией.');return false;}
+ setCloudStatus('syncing','Проверяю облачную версию…');
+ try{
+  var res=await fetchCloudRow();
+  if(res.error&&res.error.code!=='PGRST116')throw res.error;
+  if(!res.data||!res.data.state){
+   setCloudLog('В облаке ещё нет данных. Можно загрузить текущее устройство.');
+   setCloudStatus('configured','В облаке пока нет записи.');
+   return false;
+  }
+  var remote=res.data.state;
+  var rm=remote._sync&&remote._sync.modifiedAt?remote._sync.modifiedAt:res.data.updated_at;
+  var lm=state._sync&&state._sync.modifiedAt?state._sync.modifiedAt:'';
+  if(compareIso(rm,lm)>0)return await applyRemoteState(remote,res.data.updated_at,'Загружена более новая версия из облака.');
+  if(compareIso(lm,rm)>0)return await pushLocalToCloud(false);
+  cloud.lastSync=res.data.updated_at||new Date().toISOString();
+  setCloudStatus('synced','Локальные и облачные данные совпадают.');
+  return true;
+ }catch(e){setCloudStatus('error','Ошибка синхронизации: '+(e&&e.message?e.message:e));return false;}
+}
+async function forceDownloadCloud(){
+ if(!cloud.user)return;
+ if(!confirm('Заменить данные этого устройства облачной версией? Локальная копия будет перезаписана.'))return;
+ setCloudStatus('syncing','Загружаю облачную версию…');
+ try{
+  var res=await fetchCloudRow();if(res.error)throw res.error;
+  if(!res.data||!res.data.state){alert('В облаке пока нет данных.');return;}
+  await applyRemoteState(res.data.state,res.data.updated_at,'Облачная версия принудительно загружена.');
+ }catch(e){setCloudStatus('error','Не удалось загрузить облако: '+(e&&e.message?e.message:e));}
+}
+async function forceUploadCloud(){
+ if(!cloud.user)return;
+ if(!confirm('Заменить облачную версию данными с этого устройства?'))return;
+ touchSyncMeta();await dbPut(state);saveFallback();renderAll();
+ await pushLocalToCloud(true);
+}
+window.addEventListener('online',function(){if(cloud.user)syncCloudState();});
+window.addEventListener('offline',function(){if(cloud.user)setCloudStatus('offline','Нет сети. Изменения продолжают сохраняться локально.');});
 
 function actualHistoryMonths(y){
  // План 2027–2031 рассчитывается только по фактической базе до августа 2026.
@@ -1227,40 +1628,92 @@ function allocationActive(y,m){
  var s=allocationStart();
  return monthIndex(y,m)>=monthIndex(s.y,s.m);
 }
-function mandatoryDueForMonth(m){
- var total=0;
+function expenseKey(kind,id){return kind+':'+id;}
+function expensePlanYearMap(y){
+ ensureExpensePlan();
+ var k=String(y);
+ if(!state.expensePlan.annual[k])state.expensePlan.annual[k]={};
+ return state.expensePlan.annual[k];
+}
+function expensePlanMonthMap(y,m){
+ ensureExpensePlan();
+ var k=y+'-'+m;
+ if(!state.expensePlan.monthly[k])state.expensePlan.monthly[k]={};
+ return state.expensePlan.monthly[k];
+}
+function holidayMonthFromDate(date){
+ if(!date)return 0;
+ var p=String(date).split('.');
+ return p.length===2?Number(p[1])||0:0;
+}
+function allExpenseItems(){
+ var items=[];
  state.mandatory.forEach(function(x){
-  if(x.period==='Ежемесячно')total+=num(x.amount);
-  else if(x.period===MONTHS[m])total+=num(x.amount);
+  var recurring=x.period==='Ежемесячно';
+  items.push({
+   key:expenseKey('mandatory',x.id),kind:'mandatory',name:x.name,amount:num(x.amount),meta:x.period||'Обязательный',
+   defaultAnnual:recurring,
+   defaultMonth:function(y,m){return !recurring&&x.period===MONTHS[m];}
+  });
  });
- if(isBlankMandatory('net_apt')&&isBlankMandatory('mobile_a')&&isBlankMandatory('mobile_v'))total+=3000;
- if(m===5){
-  if(isBlankMandatory('life_apt')&&isBlankMandatory('prop_apt'))total+=25000;
-  if(isBlankMandatory('life_studio')&&isBlankMandatory('prop_studio'))total+=27500;
+ if(isBlankMandatory('net_apt')&&isBlankMandatory('mobile_a')&&isBlankMandatory('mobile_v')){
+  items.push({key:'mandatory:unsplit_comm',kind:'mandatory',name:'Связь — общая сумма',amount:3000,meta:'Ежемесячно',defaultAnnual:true,defaultMonth:function(){return false;}});
  }
- if(m===10&&isBlankMandatory('prop_tax')&&isBlankMandatory('lada_tax'))total+=15000;
- return total;
-}
-function holidayExpenseForMonth(m){
- var total=0;
- state.holidays.forEach(function(x){
-  if(!x.date)return;
-  var parts=String(x.date).split('.');
-  if(parts.length===2&&Number(parts[1])===m)total+=num(x.amount);
+ if(isBlankMandatory('life_apt')&&isBlankMandatory('prop_apt')){
+  items.push({key:'mandatory:unsplit_apt_ins',kind:'mandatory',name:'Страхование Марата — общая сумма',amount:25000,meta:'Май',defaultAnnual:false,defaultMonth:function(y,m){return m===5;}});
+ }
+ if(isBlankMandatory('life_studio')&&isBlankMandatory('prop_studio')){
+  items.push({key:'mandatory:unsplit_studio_ins',kind:'mandatory',name:'Страхование студии — общая сумма',amount:27500,meta:'Май',defaultAnnual:false,defaultMonth:function(y,m){return m===5;}});
+ }
+ if(isBlankMandatory('prop_tax')&&isBlankMandatory('lada_tax')){
+  items.push({key:'mandatory:unsplit_tax',kind:'mandatory',name:'Налоги — общая сумма',amount:15000,meta:'Октябрь',defaultAnnual:false,defaultMonth:function(y,m){return m===10;}});
+ }
+ state.life.forEach(function(x){
+  items.push({key:expenseKey('life',x.id),kind:'life',name:x.name,amount:num(x.amount),meta:'Расход жизнь',defaultAnnual:true,defaultMonth:function(){return false;}});
  });
- return total;
+ state.holidays.forEach(function(x){
+  var hm=holidayMonthFromDate(x.date);
+  items.push({
+   key:expenseKey('holiday',x.id),kind:'holiday',name:x.name,amount:num(x.amount),meta:x.date?('Праздник · '+x.date):'Праздник',
+   defaultAnnual:false,defaultMonth:function(y,m){return hm>0&&hm===m;}
+  });
+ });
+ return items;
 }
+function annualExpenseSelected(item,y){
+ var map=expensePlanYearMap(y);
+ if(Object.prototype.hasOwnProperty.call(map,item.key))return !!map[item.key];
+ return !!item.defaultAnnual;
+}
+function monthlyExpenseSelected(item,y,m){
+ if(annualExpenseSelected(item,y))return true;
+ var map=expensePlanMonthMap(y,m);
+ if(Object.prototype.hasOwnProperty.call(map,item.key))return !!map[item.key];
+ return !!item.defaultMonth(y,m);
+}
+function setAnnualExpenseSelected(item,y,value){expensePlanYearMap(y)[item.key]=!!value;}
+function setMonthlyExpenseSelected(item,y,m,value){expensePlanMonthMap(y,m)[item.key]=!!value;}
+function plannedExpenseSummary(y,m){
+ var result={mandatory:0,life:0,holiday:0,total:0,items:[]};
+ allExpenseItems().forEach(function(item){
+  var selected=monthlyExpenseSelected(item,y,m);
+  if(selected){result[item.kind]+=num(item.amount);result.total+=num(item.amount);}
+  result.items.push({item:item,selected:selected,annual:annualExpenseSelected(item,y)});
+ });
+ return result;
+}
+function mandatoryDueForMonth(y,m){return plannedExpenseSummary(y,m).mandatory;}
 function otherExpenseForMonth(y,m){
  if(!allocationActive(y,m))return 0;
- var life=state.life.reduce(function(s,x){return s+num(x.amount);},0);
- return life+holidayExpenseForMonth(m);
+ var s=plannedExpenseSummary(y,m);
+ return s.life+s.holiday;
 }
 function monthlyCashFlow(y,m){
  var info=fundMonthIncomeRow(y,m),r=info.row||monthRow();
  var primary=num(r.benefit)+num(r.d10)+num(r.d25);
  var secondary=num(r.d15)+num(r.d28)+num(r.studio)+num(r.other);
  var total=primary+secondary;
- var mandatory=mandatoryDueForMonth(m);
+ var mandatory=mandatoryDueForMonth(y,m);
  var mandatoryFromPrimary=Math.min(primary,mandatory);
  var mandatoryNeedAfterPrimary=Math.max(0,mandatory-mandatoryFromPrimary);
  var mandatoryFromSecondary=Math.min(secondary,mandatoryNeedAfterPrimary);
@@ -1281,6 +1734,65 @@ function monthlyCashFlow(y,m){
   otherExpenses:otherExpenses,otherShortfall:otherShortfall,availableForFunds:afterOther,active:active
  };
 }
+function renderExpensePlan(){
+ ensureExpensePlan();
+ expensePlanYear.innerHTML='';
+ for(var y=2026;y<=2031;y++)expensePlanYear.insertAdjacentHTML('beforeend','<option value="'+y+'" '+(y===Number(state.expensePlanSettings.year)?'selected':'')+'>'+y+'</option>');
+ expensePlanMonth.innerHTML='';
+ for(var m=1;m<=12;m++)expensePlanMonth.insertAdjacentHTML('beforeend','<option value="'+m+'" '+(m===Number(state.expensePlanSettings.month)?'selected':'')+'>'+MONTHS[m]+'</option>');
+
+ var yy=Number(state.expensePlanSettings.year)||2026;
+ var mm=Number(state.expensePlanSettings.month)||9;
+ var summary=plannedExpenseSummary(yy,mm);
+ var income=fundMonthIncomeRow(yy,mm);
+ var incomeTotal=sumRow(income.row);
+
+ expensePlanIncome.textContent=rub(incomeTotal);
+ expensePlanIncomeSource.textContent=income.source==='факт'?'фактический доход':(income.source==='план'?'доход из плана':'доход не заполнен');
+ expensePlanTotal.textContent=rub(summary.total);
+ expensePlanMandatory.textContent=rub(summary.mandatory);
+ var remainder=incomeTotal-summary.total;
+ expensePlanRemainder.textContent=rub(remainder);
+ expensePlanRemainder.className='kval '+(remainder>=0?'good':'bad');
+
+ var groups=[
+  {kind:'mandatory',title:'Обязательные платежи'},
+  {kind:'life',title:'Расход жизнь'},
+  {kind:'holiday',title:'Праздники и события'}
+ ];
+ var html='';
+ groups.forEach(function(g){
+  var rows=summary.items.filter(function(x){return x.item.kind===g.kind;});
+  if(!rows.length)return;
+  html+='<div class="month-plan-group">'+g.title+'</div>';
+  rows.forEach(function(row){
+   var item=row.item,annual=row.annual,checked=row.selected;
+   html+='<div class="month-plan-row">'+
+    '<div class="month-plan-name">'+escapeHtml(item.name)+'<div class="month-plan-meta">'+escapeHtml(item.meta||'')+'</div></div>'+
+    '<div class="month-plan-amount">'+rub(item.amount)+'</div>'+
+    '<div class="month-plan-check"><input type="checkbox" aria-label="Учесть в месяце" data-plan-month="'+escapeHtml(item.key)+'" '+(checked?'checked':'')+' '+(annual?'disabled':'')+'></div>'+
+    '<div class="month-plan-check"><input type="checkbox" aria-label="Учесть весь год" data-plan-year="'+escapeHtml(item.key)+'" '+(annual?'checked':'')+'></div>'+
+   '</div>';
+  });
+ });
+ expensePlanBody.innerHTML=html;
+
+ expensePlanBody.querySelectorAll('[data-plan-month]').forEach(function(el){
+  el.addEventListener('change',function(){
+   var item=allExpenseItems().find(function(x){return x.key===el.dataset.planMonth;});
+   if(!item)return;
+   setMonthlyExpenseSelected(item,yy,mm,el.checked);save();renderExpensePlan();
+  });
+ });
+ expensePlanBody.querySelectorAll('[data-plan-year]').forEach(function(el){
+  el.addEventListener('change',function(){
+   var item=allExpenseItems().find(function(x){return x.key===el.dataset.planYear;});
+   if(!item)return;
+   setAnnualExpenseSelected(item,yy,el.checked);save();renderExpensePlan();
+  });
+ });
+}
+
 function fundExternalApplies(f,y,m){
  if(!num(f.external))return false;
  var d=parseDateParts(f.externalDate);
@@ -1654,7 +2166,7 @@ function renderOverview(){
  overviewProgressList.innerHTML=progressHtml || '<div class="quick-item"><span class="mini">Нет данных</span></div>';
 }
 
-function renderAll(){renderOverview();renderCapital();renderHistory();renderPlan();renderMandatory();renderLife();renderHolidays();renderFunds();renderBanks();}
+function renderAll(){renderOverview();renderCapital();renderHistory();renderPlan();renderExpensePlan();renderMandatory();renderLife();renderHolidays();renderFunds();renderBanks();renderCloud();}
 
 function openPage(pageId,pushHistory){
  document.querySelectorAll('section').forEach(function(x){x.classList.remove('active');});
@@ -1703,6 +2215,25 @@ overviewMonth.addEventListener('change',function(){state.overviewSettings.month=
 
 historyYear.addEventListener('change',function(){state.historyYear=Number(historyYear.value);save();renderHistory();});
 planYear.addEventListener('change',function(){state.planYear=Number(planYear.value);save();renderPlan();});
+expensePlanYear.addEventListener('change',function(){state.expensePlanSettings.year=Number(expensePlanYear.value);save();renderExpensePlan();});
+expensePlanMonth.addEventListener('change',function(){state.expensePlanSettings.month=Number(expensePlanMonth.value);save();renderExpensePlan();});
+planMandatoryYearBtn.addEventListener('click',function(){
+ var y=Number(state.expensePlanSettings.year)||2026;
+ allExpenseItems().filter(function(x){return x.kind==='mandatory';}).forEach(function(item){setAnnualExpenseSelected(item,y,true);});
+ save();renderExpensePlan();
+});
+planLifeYearBtn.addEventListener('click',function(){
+ var y=Number(state.expensePlanSettings.year)||2026;
+ allExpenseItems().filter(function(x){return x.kind==='life';}).forEach(function(item){setAnnualExpenseSelected(item,y,true);});
+ save();renderExpensePlan();
+});
+planClearMonthBtn.addEventListener('click',function(){
+ var y=Number(state.expensePlanSettings.year)||2026,m=Number(state.expensePlanSettings.month)||1;
+ var map=expensePlanMonthMap(y,m);
+ allExpenseItems().forEach(function(item){if(!annualExpenseSelected(item,y))map[item.key]=false;});
+ save();renderExpensePlan();
+});
+
 recalcPlan.addEventListener('click',function(){if(confirm('Пересчитать план 2027–2031 по статистике? Ручные изменения плана будут заменены.')){state.plan=makePlan();save();renderPlan();}});
 addAsset.addEventListener('click',function(){
  var name=assetName.value.trim();if(!name){alert('Укажи название актива');return;}
@@ -1711,7 +2242,7 @@ addAsset.addEventListener('click',function(){
 });
 
 function backupJson(){
- var envelope={app:'finance-plan',version:'6.1',exportedAt:new Date().toISOString(),state:state};
+ var envelope={app:'finance-plan',version:'7.0',exportedAt:new Date().toISOString(),state:state};
  return JSON.stringify(envelope,null,2);
 }
 function showJson(message){
@@ -1743,7 +2274,7 @@ exportBtn.addEventListener('click',async function(){
  var json=backupJson();
  var file;
  try{
-  file=new File([json],'oaks-finance-v60-data.json',{type:'application/json'});
+  file=new File([json],'oaks-finance-v70-data.json',{type:'application/json'});
  }catch(e){file=null;}
 
  // Best path on iPhone/iPad: system Share Sheet -> Save to Files.
@@ -1761,7 +2292,7 @@ exportBtn.addEventListener('click',async function(){
   var blob=new Blob([json],{type:'application/json;charset=utf-8'});
   var url=URL.createObjectURL(blob);
   var a=document.createElement('a');
-  a.href=url;a.download='oaks-finance-v60-data.json';
+  a.href=url;a.download='oaks-finance-v70-data.json';
   document.body.appendChild(a);a.click();a.remove();
   setTimeout(function(){URL.revokeObjectURL(url);},1500);
   showJson('Если файл не появился в «Загрузках», JSON уже показан ниже — его можно скопировать.');
@@ -1783,6 +2314,7 @@ importFile.addEventListener('change',function(){
    state=incoming;
    if(!state.history)state.history=historyObject();
    if(!state.plan||!Object.keys(state.plan).length)state.plan=makePlan();
+   ensureExpensePlan();ensureSyncMeta();
    save();renderAll();
    alert('Данные импортированы.');
   }catch(e){
@@ -1873,7 +2405,36 @@ addBankAccount.addEventListener('click',function(){
  save();renderBanks();
 });
 
-resetBtn.addEventListener('click',function(){if(confirm('Сбросить все данные к исходной версии 6.0?')){state=clone(DEFAULT);state.plan=makePlan();save();renderAll();}});
+
+cloudHeaderBtn.addEventListener('click',function(){openPage('cloud',true);});
+cloudSaveConfigBtn.addEventListener('click',async function(){
+ var email=String(cloudEmailInput.value||'').trim();
+ storeCloudConfig({url:EMBEDDED_SUPABASE_URL,key:EMBEDDED_SUPABASE_KEY,email:email});
+ setCloudLog('Проверяю подключение к Supabase…');
+ await reinitCloud();renderCloud();
+});
+cloudLoginBtn.addEventListener('click',async function(){
+ var cfg=getCloudConfig(),email=String(cloudEmailInput.value||cfg.email||'').trim();
+ if(!cloud.client){alert('Сначала сохрани Project URL и Publishable key.');return;}
+ if(!email||email.indexOf('@')<1){alert('Укажи e-mail для входа.');return;}
+ storeCloudConfig({url:cfg.url,key:cfg.key,email:email});
+ setCloudStatus('syncing','Отправляю ссылку входа на '+email+'…');
+ try{
+  var redirect=location.origin+location.pathname;
+  var res=await cloud.client.auth.signInWithOtp({email:email,options:{emailRedirectTo:redirect}});
+  if(res.error)throw res.error;
+  setCloudStatus('auth','Ссылка входа отправлена на '+email+'. Открой письмо на нужном устройстве.');
+ }catch(e){setCloudStatus('error','Не удалось отправить ссылку: '+(e&&e.message?e.message:e));}
+});
+cloudSyncBtn.addEventListener('click',function(){syncCloudState();});
+cloudUploadBtn.addEventListener('click',function(){forceUploadCloud();});
+cloudDownloadBtn.addEventListener('click',function(){forceDownloadCloud();});
+cloudLogoutBtn.addEventListener('click',async function(){
+ if(!cloud.client)return;
+ await cloud.client.auth.signOut();cloud.user=null;unsubscribeCloud();setCloudStatus('auth','Выход выполнен. Локальные данные остаются на устройстве.');renderCloud();
+});
+
+resetBtn.addEventListener('click',function(){if(confirm('Сбросить все данные к исходной версии 7.1?')){state=clone(DEFAULT);state.plan=makePlan();save();renderAll();}});
 initStorage().then(function(){
  var id=(location.hash||'').replace('#','');
  if(id&&document.getElementById(id))openPage(id,false);else showHome(false);
