@@ -10,7 +10,7 @@
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
 <meta name="apple-mobile-web-app-title" content="Oaks Finance">
 <meta name="mobile-web-app-capable" content="yes">
-<title>Oaks Finance 7.1</title>
+<title>Oaks Finance 7.2</title>
 <style>
 :root{
  --bg:#f5f5f2;--bg-2:#ffffff;--card:#ffffff;--text:#090909;--muted:#5f5f5f;--line:#d8d8d2;
@@ -262,12 +262,29 @@ tbody tr:hover{background:#fff9db}
  .cloud-actions{display:grid;grid-template-columns:1fr 1fr}
  .cloud-actions button{width:100%}
 }
+
+
+.cloud-otp-box{
+ margin-top:10px;padding:12px;border:1px solid #e7df9d;border-radius:16px;background:#fffbea
+}
+.cloud-otp-grid{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:end}
+.cloud-otp-grid input{
+ font-size:22px!important;font-weight:850;letter-spacing:.22em;text-align:center;
+ font-variant-numeric:tabular-nums
+}
+.cloud-auth-hint{font-size:11px;color:#67676f;line-height:1.35;margin-top:7px}
+.cloud-auth-ok{color:#0b7d49;font-weight:800}
+@media(max-width:640px){
+ .cloud-otp-grid{grid-template-columns:1fr}
+ .cloud-otp-grid button{width:100%}
+ .cloud-otp-grid input{font-size:21px!important}
+}
 </style>
 </head>
 <body>
 <div class="app">
 <header>
- <div><h1>Oaks Finance 7.1</h1><div class="sub">Обзор · капитал · доходы · расходы · фонды · банковские счета</div></div>
+ <div><h1>Oaks Finance 7.2</h1><div class="sub">Обзор · капитал · доходы · расходы · фонды · банковские счета</div></div>
  <div class="row">
  <span class="badge" id="dbStatus">База: загрузка…</span>
  <button class="secondary" id="cloudHeaderBtn" type="button">☁ Локально</button>
@@ -288,7 +305,7 @@ tbody tr:hover{background:#fff9db}
   <span class="badge" id="lastSavedAt">Загрузка…</span>
  </div>
  <div class="small" style="margin-top:6px">После публикации на одном HTTPS-адресе обновление интерфейса не стирает базу. На iPhone приложение можно добавить на экран Домой.</div>
- <div class="small" style="margin-top:4px"><b>Oaks Finance 7.1:</b> локальная база остаётся резервом, а Supabase может стать общей базой для iPhone, Mac и других устройств.</div>
+ <div class="small" style="margin-top:4px"><b>Oaks Finance 7.2:</b> локальная база остаётся резервом, а Supabase может стать общей базой для iPhone, Mac и других устройств.</div>
 </div>
 
 <div class="menu-screen"><div class="tabs">
@@ -801,7 +818,7 @@ tbody tr:hover{background:#fff9db}
   </div>
 
   <div class="notice">
-   <b>Supabase уже подключён к Oaks Finance 7.1.</b> Project URL и публичный Publishable key встроены в приложение. Для синхронизации на новом устройстве нужен только вход по e-mail.
+   <b>Supabase уже подключён к Oaks Finance 7.2.</b> Project URL и публичный Publishable key встроены в приложение. Для синхронизации на новом устройстве нужен только вход по e-mail.
   </div>
 
   <div class="cloud-config-grid" style="margin-top:10px">
@@ -816,24 +833,40 @@ tbody tr:hover{background:#fff9db}
    </label>
   </div>
 
+  <div class="cloud-otp-box">
+   <div class="row space">
+    <div>
+     <b>Вход по коду из e-mail</b>
+     <div class="cloud-auth-hint">Открой Oaks Finance именно с иконки на экране Домой. Получи код и введи его здесь — переходить по ссылке из письма не нужно.</div>
+    </div>
+   </div>
+   <div class="cloud-otp-grid" style="margin-top:9px">
+    <label>Код из письма
+     <input id="cloudOtpInput" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="8" placeholder="••••••" autocomplete="one-time-code">
+    </label>
+    <button id="cloudVerifyOtpBtn" type="button">Войти по коду</button>
+   </div>
+  </div>
+
   <div class="cloud-actions">
    <button id="cloudSaveConfigBtn" type="button">Проверить подключение</button>
-   <button id="cloudLoginBtn" type="button">Отправить ссылку входа</button>
+   <button id="cloudLoginBtn" type="button">Получить код</button>
    <button id="cloudSyncBtn" type="button" class="secondary">Синхронизировать сейчас</button>
    <button id="cloudUploadBtn" type="button" class="secondary">Загрузить это устройство → облако</button>
    <button id="cloudDownloadBtn" type="button" class="secondary">Скачать облако → это устройство</button>
    <button id="cloudLogoutBtn" type="button" class="secondary">Выйти</button>
   </div>
 
-  <div class="cloud-log" id="cloudLog" style="margin-top:10px">Supabase настроен. Выполни вход по e-mail, чтобы включить синхронизацию между устройствами.</div>
+  <div class="cloud-log" id="cloudLog" style="margin-top:10px">Supabase настроен. Введи e-mail, нажми «Получить код», затем введи код из письма.</div>
  </div>
 
  <div class="card" style="margin-top:10px">
   <h2>Что осталось настроить один раз</h2>
   <ol class="cloud-setup-list">
-   <li>В Supabase → SQL Editor выполни файл <b>supabase-setup.sql</b> из пакета Oaks Finance 7.1.</li>
-   <li>В Authentication → URL Configuration укажи <b>https://oaksfamily.github.io/Oaks-finance/</b> как Site URL и добавь его в Redirect URLs.</li>
-   <li>В Oaks Finance укажи e-mail и нажми «Отправить ссылку входа».</li>
+   <li>В Supabase → SQL Editor выполни файл <b>supabase-setup.sql</b> из пакета Oaks Finance 7.2.</li>
+   <li>В Supabase → Authentication → Email Templates → Magic Link измени письмо так, чтобы в нём выводился код <b>{{ .Token }}</b>, а не только ссылка <b>{{ .ConfirmationURL }}</b>.</li>
+   <li>Открой Oaks Finance с иконки на экране Домой → введи e-mail → «Получить код».</li>
+   <li>Введи полученный код прямо в Oaks Finance → «Войти по коду».</li>
    <li>На устройстве, где сейчас самые актуальные данные, один раз нажми «Загрузить это устройство → облако».</li>
   </ol>
   <div class="small" style="margin-top:8px">После этого другие устройства с тем же входом будут получать общую актуальную базу автоматически. IndexedDB продолжает работать как локальная резервная копия.</div>
@@ -991,7 +1024,7 @@ var CLOUD_CONFIG_KEY='oaksFinanceCloudConfigV70';
 var CLOUD_TABLE='oaks_finance_state';
 var EMBEDDED_SUPABASE_URL='https://ozwlnisasawasraqqaot.supabase.co';
 var EMBEDDED_SUPABASE_KEY='sb_publishable_aJYPCH2NISEtca_sj-h8bQ_o5xtcFZv';
-var cloud={client:null,user:null,channel:null,status:'local',applyingRemote:false,pushTimer:null,lastSync:'',initialized:false};
+var cloud={client:null,user:null,channel:null,status:'local',applyingRemote:false,pushTimer:null,lastSync:'',initialized:false,pendingEmail:''};
 var MIGRATION_KEYS=['financePlannerSimpleV31','financePlannerSimpleV30','financePlannerV2'];
 
 function ensureIncomeYears(){
@@ -1239,7 +1272,9 @@ function renderCloud(){
  var key=document.getElementById('cloudAnonKey');if(key&&document.activeElement!==key)key.value=cfg.key||'';
  var email=document.getElementById('cloudEmailInput');if(email&&document.activeElement!==email&& !email.value)email.value=cfg.email||'';
  renderCloudStatusOnly();
- var login=document.getElementById('cloudLoginBtn');if(login)login.disabled=!(cfg.url&&cfg.key);
+ var login=document.getElementById('cloudLoginBtn');if(login){login.disabled=!(cfg.url&&cfg.key)||!!cloud.user;login.textContent=cloud.user?'Вход выполнен':'Получить код';}
+ var verify=document.getElementById('cloudVerifyOtpBtn');if(verify)verify.disabled=!(cfg.url&&cfg.key)||!!cloud.user;
+ var otp=document.getElementById('cloudOtpInput');if(otp)otp.disabled=!!cloud.user;
  var sync=document.getElementById('cloudSyncBtn');if(sync)sync.disabled=!cloud.user;
  var up=document.getElementById('cloudUploadBtn');if(up)up.disabled=!cloud.user;
  var down=document.getElementById('cloudDownloadBtn');if(down)down.disabled=!cloud.user;
@@ -1257,7 +1292,7 @@ async function initCloud(){
  if(!cfg.url||!cfg.key){setCloudStatus('local','Облако не настроено. Локальные данные сохранены на этом устройстве.');return;}
  if(!window.supabase||!window.supabase.createClient){setCloudStatus('error','Не удалось загрузить модуль Supabase. Проверь интернет и перезагрузи приложение.');return;}
  try{
-  cloud.client=window.supabase.createClient(cfg.url,cfg.key,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
+  cloud.client=window.supabase.createClient(cfg.url,cfg.key,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false,storageKey:'oaks-finance-auth-v72'}});
   var sessionRes=await cloud.client.auth.getSession();
   cloud.user=sessionRes&&sessionRes.data&&sessionRes.data.session?sessionRes.data.session.user:null;
   cloud.client.auth.onAuthStateChange(function(event,session){
@@ -1265,10 +1300,10 @@ async function initCloud(){
    cloud.user=session&&session.user?session.user:null;
    renderCloud();
    if(cloud.user&&cloud.user.id!==previous)setTimeout(function(){connectCloudForUser();},0);
-   if(!cloud.user){unsubscribeCloud();setCloudStatus('auth','Подключение сохранено. Выполни вход по e-mail для синхронизации.');}
+   if(!cloud.user){unsubscribeCloud();setCloudStatus('auth','Подключение сохранено. Получи код на e-mail и введи его в приложении.');}
   });
   if(cloud.user)await connectCloudForUser();
-  else setCloudStatus('auth','Supabase подключён. Выполни вход по e-mail.');
+  else setCloudStatus('auth','Supabase подключён. Введи e-mail и получи одноразовый код.');
  }catch(e){setCloudStatus('error','Ошибка подключения Supabase: '+(e&&e.message?e.message:e));}
 }
 async function reinitCloud(){
@@ -2414,27 +2449,66 @@ cloudSaveConfigBtn.addEventListener('click',async function(){
  await reinitCloud();renderCloud();
 });
 cloudLoginBtn.addEventListener('click',async function(){
- var cfg=getCloudConfig(),email=String(cloudEmailInput.value||cfg.email||'').trim();
- if(!cloud.client){alert('Сначала сохрани Project URL и Publishable key.');return;}
+ var cfg=getCloudConfig(),email=String(cloudEmailInput.value||cfg.email||'').trim().toLowerCase();
+ if(!cloud.client){alert('Подключение Supabase ещё не готово. Нажми «Проверить подключение».');return;}
  if(!email||email.indexOf('@')<1){alert('Укажи e-mail для входа.');return;}
  storeCloudConfig({url:cfg.url,key:cfg.key,email:email});
- setCloudStatus('syncing','Отправляю ссылку входа на '+email+'…');
+ cloud.pendingEmail=email;
+ if(cloudOtpInput){cloudOtpInput.value='';cloudOtpInput.focus();}
+ setCloudStatus('syncing','Отправляю одноразовый код на '+email+'…');
  try{
-  var redirect=location.origin+location.pathname;
-  var res=await cloud.client.auth.signInWithOtp({email:email,options:{emailRedirectTo:redirect}});
+  var res=await cloud.client.auth.signInWithOtp({
+   email:email,
+   options:{shouldCreateUser:true}
+  });
   if(res.error)throw res.error;
-  setCloudStatus('auth','Ссылка входа отправлена на '+email+'. Открой письмо на нужном устройстве.');
- }catch(e){setCloudStatus('error','Не удалось отправить ссылку: '+(e&&e.message?e.message:e));}
+  setCloudStatus('auth','Код отправлен на '+email+'. Введи код из письма прямо здесь.');
+ }catch(e){
+  setCloudStatus('error','Не удалось отправить код: '+(e&&e.message?e.message:e));
+ }
+});
+cloudVerifyOtpBtn.addEventListener('click',async function(){
+ var cfg=getCloudConfig();
+ var email=String(cloud.pendingEmail||cloudEmailInput.value||cfg.email||'').trim().toLowerCase();
+ var token=String(cloudOtpInput.value||'').replace(/\s+/g,'').trim();
+ if(!cloud.client){alert('Подключение Supabase ещё не готово.');return;}
+ if(!email||email.indexOf('@')<1){alert('Сначала укажи e-mail и получи код.');return;}
+ if(!token||token.length<6){alert('Введи код из письма.');return;}
+ setCloudStatus('syncing','Проверяю код…');
+ try{
+  var res=await cloud.client.auth.verifyOtp({email:email,token:token,type:'email'});
+  if(res.error)throw res.error;
+  var session=res.data&&res.data.session?res.data.session:null;
+  cloud.user=session&&session.user?session.user:(res.data&&res.data.user?res.data.user:null);
+  cloud.pendingEmail='';
+  if(cloudOtpInput)cloudOtpInput.value='';
+  if(cloud.user){
+   setCloudStatus('syncing','Вход выполнен. Подключаю облачную базу…');
+   await connectCloudForUser();
+   renderCloud();
+  }else{
+   setCloudStatus('error','Код принят, но сессия не создана. Попробуй получить новый код.');
+  }
+ }catch(e){
+  setCloudStatus('error','Не удалось войти по коду: '+(e&&e.message?e.message:e));
+ }
+});
+cloudOtpInput.addEventListener('input',function(){
+ var cleaned=String(cloudOtpInput.value||'').replace(/\D+/g,'').slice(0,8);
+ if(cloudOtpInput.value!==cleaned)cloudOtpInput.value=cleaned;
+});
+cloudOtpInput.addEventListener('keydown',function(e){
+ if(e.key==='Enter'&&!cloudVerifyOtpBtn.disabled)cloudVerifyOtpBtn.click();
 });
 cloudSyncBtn.addEventListener('click',function(){syncCloudState();});
 cloudUploadBtn.addEventListener('click',function(){forceUploadCloud();});
 cloudDownloadBtn.addEventListener('click',function(){forceDownloadCloud();});
 cloudLogoutBtn.addEventListener('click',async function(){
  if(!cloud.client)return;
- await cloud.client.auth.signOut();cloud.user=null;unsubscribeCloud();setCloudStatus('auth','Выход выполнен. Локальные данные остаются на устройстве.');renderCloud();
+ await cloud.client.auth.signOut();cloud.user=null;cloud.pendingEmail='';if(cloudOtpInput)cloudOtpInput.value='';unsubscribeCloud();setCloudStatus('auth','Выход выполнен. Локальные данные остаются на устройстве.');renderCloud();
 });
 
-resetBtn.addEventListener('click',function(){if(confirm('Сбросить все данные к исходной версии 7.1?')){state=clone(DEFAULT);state.plan=makePlan();save();renderAll();}});
+resetBtn.addEventListener('click',function(){if(confirm('Сбросить все данные к исходной версии 7.2?')){state=clone(DEFAULT);state.plan=makePlan();save();renderAll();}});
 initStorage().then(function(){
  var id=(location.hash||'').replace('#','');
  if(id&&document.getElementById(id))openPage(id,false);else showHome(false);
