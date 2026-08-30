@@ -10,7 +10,7 @@
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
 <meta name="apple-mobile-web-app-title" content="Oaks Finance">
 <meta name="mobile-web-app-capable" content="yes">
-<title>Oaks Finance 7.4</title>
+<title>Oaks Finance 7.5</title>
 <style>
 :root{
  --bg:#f5f5f2;--bg-2:#ffffff;--card:#ffffff;--text:#090909;--muted:#5f5f5f;--line:#d8d8d2;
@@ -303,7 +303,7 @@ tbody tr:hover{background:#fff9db}
 <body>
 <div class="app">
 <header>
- <div><h1>Oaks Finance 7.4</h1><div class="sub">Обзор · капитал · доходы · расходы · фонды · банковские счета</div></div>
+ <div><h1>Oaks Finance 7.5</h1><div class="sub">Обзор · капитал · доходы · расходы · фонды · банковские счета</div></div>
  <div class="row">
  <span class="badge" id="dbStatus">База: загрузка…</span>
  <button class="secondary" id="cloudHeaderBtn" type="button">☁ Локально</button>
@@ -324,7 +324,7 @@ tbody tr:hover{background:#fff9db}
   <span class="badge" id="lastSavedAt">Загрузка…</span>
  </div>
  <div class="small" style="margin-top:6px">После публикации на одном HTTPS-адресе обновление интерфейса не стирает базу. На iPhone приложение можно добавить на экран Домой.</div>
- <div class="small" style="margin-top:4px"><b>Oaks Finance 7.4:</b> локальная база остаётся резервом, а Supabase может стать общей базой для iPhone, Mac и других устройств.</div>
+ <div class="small" style="margin-top:4px"><b>Oaks Finance 7.5:</b> локальная база остаётся резервом, а Supabase может стать общей базой для iPhone, Mac и других устройств.</div>
 </div>
 
 <div class="menu-screen"><div class="tabs">
@@ -837,7 +837,7 @@ tbody tr:hover{background:#fff9db}
   </div>
 
   <div class="notice">
-   <b>Supabase уже подключён к Oaks Finance 7.4.</b> Project URL и публичный Publishable key встроены в приложение. Для синхронизации на новом устройстве нужен только вход по e-mail.
+   <b>Supabase уже подключён к Oaks Finance 7.5.</b> Project URL и публичный Publishable key встроены в приложение. Для синхронизации на новом устройстве нужен только вход по e-mail.
   </div>
 
   <div class="cloud-config-grid" style="margin-top:10px">
@@ -881,18 +881,21 @@ tbody tr:hover{background:#fff9db}
    <button id="cloudLogoutBtn" type="button" class="secondary">Выйти</button>
   </div>
 
+  <div class="small" id="cloudRecoveryDiag" style="margin-top:9px">
+   В 7.5 recovery-ссылка не использует <code>#cloud</code>: эта часть URL зарезервирована Supabase для авторизационной сессии.
+  </div>
   <div class="cloud-log" id="cloudLog" style="margin-top:10px">Supabase настроен. Введи e-mail и пароль.</div>
  </div>
 
  <div class="card" style="margin-top:10px">
   <h2>Что осталось настроить один раз</h2>
   <ol class="cloud-setup-list">
-   <li>Если <b>supabase-setup.sql</b> уже выполнялся раньше, повторять его не нужно.</li>
-   <li>Открой Oaks Finance 7.4 в <b>Safari</b>, где у тебя уже выполнен вход в Supabase.</li>
-   <li>Облако → введи новый пароль минимум из 8 символов → нажми <b>«Установить / сменить пароль»</b>.</li>
-   <li>После сообщения об успешной смене открой Oaks Finance с иконки на экране Домой.</li>
-   <li>Введи тот же e-mail и пароль → <b>«Войти»</b>.</li>
-   <li>На устройстве с актуальными данными при необходимости один раз нажми <b>«Загрузить это устройство → облако»</b>.</li>
+   <li>В Supabase → Authentication → URL Configuration проверь Site URL: <b>https://oaksfamily.github.io/Oaks-finance/</b>.</li>
+   <li>В Redirect URLs должен быть разрешён тот же адрес: <b>https://oaksfamily.github.io/Oaks-finance/</b>.</li>
+   <li>В Oaks Finance → Облако введи e-mail и нажми <b>«Получить ссылку для установки пароля»</b>.</li>
+   <li>Открой письмо в Safari и нажми ссылку. После возврата Oaks Finance сам откроет раздел «Облако» в режиме восстановления.</li>
+   <li>Введи новый пароль минимум из 8 символов → <b>«Установить / сменить пароль»</b>.</li>
+   <li>После успеха открой приложение с экрана Домой и войди e-mail + пароль.</li>
   </ol>
   <div class="small" style="margin-top:8px">После этого другие устройства с тем же входом будут получать общую актуальную базу автоматически. IndexedDB продолжает работать как локальная резервная копия.</div>
  </div>
@@ -1049,7 +1052,7 @@ var CLOUD_CONFIG_KEY='oaksFinanceCloudConfigV70';
 var CLOUD_TABLE='oaks_finance_state';
 var EMBEDDED_SUPABASE_URL='https://ozwlnisasawasraqqaot.supabase.co';
 var EMBEDDED_SUPABASE_KEY='sb_publishable_aJYPCH2NISEtca_sj-h8bQ_o5xtcFZv';
-var cloud={client:null,user:null,channel:null,status:'local',applyingRemote:false,pushTimer:null,lastSync:'',initialized:false};
+var cloud={client:null,user:null,channel:null,status:'local',applyingRemote:false,pushTimer:null,lastSync:'',initialized:false,recoveryPending:false};
 var MIGRATION_KEYS=['financePlannerSimpleV31','financePlannerSimpleV30','financePlannerV2'];
 
 function ensureIncomeYears(){
@@ -1318,24 +1321,61 @@ async function initCloud(){
  if(!cfg.url||!cfg.key){setCloudStatus('local','Облако не настроено. Локальные данные сохранены на этом устройстве.');return;}
  if(!window.supabase||!window.supabase.createClient){setCloudStatus('error','Не удалось загрузить модуль Supabase. Проверь интернет и перезагрузи приложение.');return;}
  try{
-  cloud.client=window.supabase.createClient(cfg.url,cfg.key,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
-  var sessionRes=await cloud.client.auth.getSession();
-  cloud.user=sessionRes&&sessionRes.data&&sessionRes.data.session?sessionRes.data.session.user:null;
+  var hashParams=new URLSearchParams((location.hash||'').replace(/^#/,''));
+  var queryParams=new URLSearchParams(location.search||'');
+  cloud.recoveryPending=hashParams.get('type')==='recovery'||queryParams.get('type')==='recovery';
+
+  if(hashParams.get('error_description')){
+   setCloudStatus('error','Ошибка входа Supabase: '+decodeURIComponent(hashParams.get('error_description')));
+  }
+
+  cloud.client=window.supabase.createClient(cfg.url,cfg.key,{
+   auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}
+  });
+
+  // Subscribe immediately so PASSWORD_RECOVERY isn't missed during client initialization.
   cloud.client.auth.onAuthStateChange(function(event,session){
    var previous=cloud.user&&cloud.user.id;
    cloud.user=session&&session.user?session.user:null;
+
+   if(event==='PASSWORD_RECOVERY'){
+    cloud.recoveryPending=true;
+    setTimeout(function(){
+     renderCloud();
+     openPage('cloud',false);
+     setCloudStatus('auth','Ссылка для установки пароля подтверждена. Введи новый пароль и нажми «Установить / сменить пароль».');
+    },0);
+    return;
+   }
+
    renderCloud();
-   if(event==='PASSWORD_RECOVERY'&&cloud.user){
-    setCloudStatus('auth','Ссылка подтверждена. Введи новый пароль и нажми «Установить / сменить пароль».');
-   }else if(cloud.user&&cloud.user.id!==previous){
+   if(cloud.user&&cloud.user.id!==previous){
     setTimeout(function(){connectCloudForUser();},0);
    }
-   if(!cloud.user){unsubscribeCloud();setCloudStatus('auth','Подключение сохранено. Войди по e-mail и паролю.');}
+   if(!cloud.user&&event==='SIGNED_OUT'){
+    unsubscribeCloud();
+    setCloudStatus('auth','Войди по e-mail и паролю.');
+   }
   });
+
+  var sessionRes=await cloud.client.auth.getSession();
+  if(sessionRes&&sessionRes.error)throw sessionRes.error;
+  cloud.user=sessionRes&&sessionRes.data&&sessionRes.data.session?sessionRes.data.session.user:null;
+
+  if(cloud.user&&cloud.recoveryPending){
+   openPage('cloud',false);
+   setCloudStatus('auth','Режим установки пароля активен. Введи новый пароль и нажми «Установить / сменить пароль».');
+   renderCloud();
+   return;
+  }
+
   if(cloud.user)await connectCloudForUser();
   else setCloudStatus('auth','Supabase подключён. Войди по e-mail и паролю.');
- }catch(e){setCloudStatus('error','Ошибка подключения Supabase: '+(e&&e.message?e.message:e));}
+ }catch(e){
+  setCloudStatus('error','Ошибка подключения Supabase: '+(e&&e.message?e.message:e));
+ }
 }
+
 async function reinitCloud(){
  unsubscribeCloud();
  cloud.client=null;cloud.user=null;cloud.initialized=false;
@@ -2521,7 +2561,9 @@ cloudSetPasswordBtn.addEventListener('click',async function(){
   var res=await cloud.client.auth.updateUser({password:password});
   if(res.error)throw res.error;
   cloud.user=res.data&&res.data.user?res.data.user:cloud.user;
-  setCloudStatus('synced','Пароль установлен. Теперь можно войти с этим e-mail и паролем в приложении на экране Домой.');
+  cloud.recoveryPending=false;
+  try{history.replaceState({page:'cloud'},'',location.origin+location.pathname);}catch(cleanErr){}
+  setCloudStatus('synced','Пароль установлен. Теперь открой Oaks Finance с экрана Домой и войди по e-mail и этому паролю.');
   renderCloud();
  }catch(e){
   setCloudStatus('error','Не удалось установить пароль: '+(e&&e.message?e.message:e));
@@ -2533,12 +2575,12 @@ cloudPasswordResetBtn.addEventListener('click',async function(){
  if(!cloud.client){alert('Подключение Supabase ещё не готово. Нажми «Проверить подключение».');return;}
  if(!email||email.indexOf('@')<1){alert('Укажи e-mail для установки пароля.');return;}
  storeCloudConfig({url:cfg.url,key:cfg.key,email:email});
- var redirect=location.origin+location.pathname+'#cloud';
+ var redirect=location.origin+location.pathname;
  setCloudStatus('syncing','Отправляю ссылку для установки пароля на '+email+'…');
  try{
   var res=await cloud.client.auth.resetPasswordForEmail(email,{redirectTo:redirect});
   if(res.error)throw res.error;
-  setCloudStatus('auth','Письмо отправлено. Открой ссылку в Safari. После возврата в Oaks Finance задай новый пароль.');
+  setCloudStatus('auth','Письмо отправлено. Открой ссылку в Safari. Она должна вернуть тебя на Oaks Finance и автоматически открыть режим установки пароля.');
  }catch(e){
   setCloudStatus('error','Не удалось отправить письмо: '+(e&&e.message?e.message:e));
  }
@@ -2557,7 +2599,7 @@ cloudLogoutBtn.addEventListener('click',async function(){
  await cloud.client.auth.signOut();cloud.user=null;if(cloudPasswordInput)cloudPasswordInput.value='';unsubscribeCloud();setCloudStatus('auth','Выход выполнен. Локальные данные остаются на устройстве.');renderCloud();
 });
 
-resetBtn.addEventListener('click',function(){if(confirm('Сбросить все данные к исходной версии 7.4?')){state=clone(DEFAULT);state.plan=makePlan();save();renderAll();}});
+resetBtn.addEventListener('click',function(){if(confirm('Сбросить все данные к исходной версии 7.5?')){state=clone(DEFAULT);state.plan=makePlan();save();renderAll();}});
 initStorage().then(function(){
  var id=(location.hash||'').replace('#','');
  if(id&&document.getElementById(id))openPage(id,false);else showHome(false);
