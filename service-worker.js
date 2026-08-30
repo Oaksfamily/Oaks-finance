@@ -1,5 +1,5 @@
-const CACHE='oaks-finance-v76-dedicated-reset-1';
-const ASSETS=['./','./index.html','./reset-password.html','./manifest.json','./icon-180.png','./icon-192.png','./icon-512.png'];
+const CACHE='oaks-finance-v77-no-email-1';
+const ASSETS=['./','./index.html','./manifest.json','./icon-180.png','./icon-192.png','./icon-512.png'];
 self.addEventListener('install',event=>{
  event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(ASSETS)));
  self.skipWaiting();
@@ -17,11 +17,7 @@ self.addEventListener('fetch',event=>{
    return response;
   }).catch(()=>caches.match(event.request).then(hit=>{
    if(hit)return hit;
-   try{
-    const u=new URL(event.request.url);
-    if(u.pathname.endsWith('/reset-password.html'))return caches.match('./reset-password.html');
-   }catch(e){}
-   return caches.match('./index.html');
+return caches.match('./index.html');
   }))
  );
 });

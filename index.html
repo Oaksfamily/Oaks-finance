@@ -10,7 +10,7 @@
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
 <meta name="apple-mobile-web-app-title" content="Oaks Finance">
 <meta name="mobile-web-app-capable" content="yes">
-<title>Oaks Finance 7.6</title>
+<title>Oaks Finance 7.7</title>
 <style>
 :root{
  --bg:#f5f5f2;--bg-2:#ffffff;--card:#ffffff;--text:#090909;--muted:#5f5f5f;--line:#d8d8d2;
@@ -303,7 +303,7 @@ tbody tr:hover{background:#fff9db}
 <body>
 <div class="app">
 <header>
- <div><h1>Oaks Finance 7.6</h1><div class="sub">Обзор · капитал · доходы · расходы · фонды · банковские счета</div></div>
+ <div><h1>Oaks Finance 7.7</h1><div class="sub">Обзор · капитал · доходы · расходы · фонды · банковские счета</div></div>
  <div class="row">
  <span class="badge" id="dbStatus">База: загрузка…</span>
  <button class="secondary" id="cloudHeaderBtn" type="button">☁ Локально</button>
@@ -324,7 +324,7 @@ tbody tr:hover{background:#fff9db}
   <span class="badge" id="lastSavedAt">Загрузка…</span>
  </div>
  <div class="small" style="margin-top:6px">После публикации на одном HTTPS-адресе обновление интерфейса не стирает базу. На iPhone приложение можно добавить на экран Домой.</div>
- <div class="small" style="margin-top:4px"><b>Oaks Finance 7.6:</b> локальная база остаётся резервом, а Supabase может стать общей базой для iPhone, Mac и других устройств.</div>
+ <div class="small" style="margin-top:4px"><b>Oaks Finance 7.7:</b> локальная база остаётся резервом, а Supabase может стать общей базой для iPhone, Mac и других устройств.</div>
 </div>
 
 <div class="menu-screen"><div class="tabs">
@@ -496,7 +496,7 @@ tbody tr:hover{background:#fff9db}
    <div class="card" style="padding:12px"><div class="klabel">Колонок дохода</div><div class="kval">7</div></div>
   </div>
   <div class="notice" style="margin-top:10px">
-   Годы 2027–2031 во вкладке «Доход» специально пустые. Здесь можно заносить фактические поступления вручную, не меняя автоматический план во вкладке «Доход план».
+   <b>Supabase подключён к Oaks Finance 7.7.</b> Вход — только по логину и паролю. Приложение не отправляет и не ждёт никаких писем.
   </div>
   <div class="scroll" style="margin-top:12px">
    <table style="min-width:1120px"><thead><tr><th>Месяц</th><th>Пособие 8 день</th><th>10 день</th><th>15 день</th><th>25 день</th><th>28 день</th><th>Студия доход</th><th>Доход прочие</th><th>Итого</th></tr></thead><tbody id="historyBody"></tbody></table>
@@ -837,7 +837,7 @@ tbody tr:hover{background:#fff9db}
   </div>
 
   <div class="notice">
-   <b>Supabase уже подключён к Oaks Finance 7.6.</b> Project URL и публичный Publishable key встроены в приложение. Для синхронизации на новом устройстве нужен только вход по e-mail.
+   <b>Supabase уже подключён к Oaks Finance 7.7.</b> Project URL и публичный Publishable key встроены в приложение. Для синхронизации на новом устройстве нужен только вход по e-mail.
   </div>
 
   <div class="cloud-config-grid" style="margin-top:10px">
@@ -847,15 +847,15 @@ tbody tr:hover{background:#fff9db}
    <label>Publishable key / anon public key
     <input id="cloudAnonKey" class="cloud-sensitive" type="password" value="sb_publishable_aJYPCH2NISEtca_sj-h8bQ_o5xtcFZv" readonly autocomplete="off" autocapitalize="off">
    </label>
-   <label>E-mail для входа
+   <label>Логин (e-mail)
     <input id="cloudEmailInput" type="email" placeholder="name@example.com" autocomplete="email" autocapitalize="off">
    </label>
   </div>
 
   <div class="cloud-password-box">
    <div>
-    <b>Вход по e-mail и паролю</b>
-    <div class="cloud-password-note">Для приложения на экране Домой пароль удобнее всего: никаких ссылок из письма и отдельной Safari-сессии.</div>
+    <b>Вход по логину и паролю</b>
+    <div class="cloud-password-note">Один и тот же логин и пароль используются на iPhone, Mac и других устройствах. Письма, вход по ссылке, одноразовые коды и SMTP не используются.</div>
    </div>
    <div class="cloud-password-grid" style="margin-top:9px">
     <label>Пароль
@@ -864,13 +864,6 @@ tbody tr:hover{background:#fff9db}
     <button id="cloudPasswordLoginBtn" type="button">Войти</button>
    </div>
    <label class="password-toggle"><input id="cloudShowPassword" type="checkbox">Показать пароль</label>
-   <div class="cloud-password-actions">
-    <button id="cloudSetPasswordBtn" type="button" class="secondary">Установить / сменить пароль</button>
-    <button id="cloudPasswordResetBtn" type="button" class="secondary">Получить ссылку для установки пароля</button>
-   </div>
-   <div class="cloud-password-note">
-    Приложение само перепроверит текущую Supabase-сессию. Если сессии нет, используй кнопку «Получить ссылку для установки пароля».
-   </div>
   </div>
 
   <div class="cloud-actions">
@@ -881,21 +874,18 @@ tbody tr:hover{background:#fff9db}
    <button id="cloudLogoutBtn" type="button" class="secondary">Выйти</button>
   </div>
 
-  <div class="small" id="cloudRecoveryDiag" style="margin-top:9px">
-   В 7.6 recovery вынесен на отдельную страницу <code>reset-password.html</code>. Главная страница приложения больше не участвует в установке пароля.
-  </div>
   <div class="cloud-log" id="cloudLog" style="margin-top:10px">Supabase настроен. Введи e-mail и пароль.</div>
  </div>
 
  <div class="card" style="margin-top:10px">
   <h2>Что осталось настроить один раз</h2>
   <ol class="cloud-setup-list">
-   <li>В Supabase → Authentication → URL Configuration добавь точный Redirect URL: <b>https://oaksfamily.github.io/Oaks-finance/reset-password.html</b>.</li>
-   <li>В Oaks Finance → Облако введи e-mail и нажми <b>«Получить ссылку для установки пароля»</b>.</li>
-   <li>Открой письмо Supabase в Safari.</li>
-   <li>Ссылка откроет отдельную страницу <b>«Установка пароля Oaks Finance»</b>.</li>
-   <li>Введи новый пароль два раза и нажми <b>«Сохранить пароль»</b>.</li>
-   <li>После сообщения «Пароль установлен» открой Oaks Finance с экрана Домой и войди e-mail + пароль.</li>
+   <li>В Supabase открой <b>Authentication → Users</b>.</li>
+   <li>Нажми <b>Add user → Create new user</b>.</li>
+   <li>Задай e-mail как логин и постоянный пароль.</li>
+   <li>Если есть переключатель <b>Auto Confirm User</b> — включи его, чтобы вход не требовал подтверждения письмом.</li>
+   <li>В Oaks Finance на каждом устройстве введи этот же логин и пароль → <b>«Войти»</b>.</li>
+   <li>На устройстве, где сейчас находятся правильные данные, после первого входа один раз нажми <b>«Загрузить это устройство → облако»</b>.</li>
   </ol>
   <div class="small" style="margin-top:8px">После этого другие устройства с тем же входом будут получать общую актуальную базу автоматически. IndexedDB продолжает работать как локальная резервная копия.</div>
  </div>
@@ -1052,7 +1042,7 @@ var CLOUD_CONFIG_KEY='oaksFinanceCloudConfigV70';
 var CLOUD_TABLE='oaks_finance_state';
 var EMBEDDED_SUPABASE_URL='https://ozwlnisasawasraqqaot.supabase.co';
 var EMBEDDED_SUPABASE_KEY='sb_publishable_aJYPCH2NISEtca_sj-h8bQ_o5xtcFZv';
-var cloud={client:null,user:null,channel:null,status:'local',applyingRemote:false,pushTimer:null,lastSync:'',initialized:false,recoveryPending:false};
+var cloud={client:null,user:null,channel:null,status:'local',applyingRemote:false,pushTimer:null,lastSync:'',initialized:false};
 var MIGRATION_KEYS=['financePlannerSimpleV31','financePlannerSimpleV30','financePlannerV2'];
 
 function ensureIncomeYears(){
@@ -1301,8 +1291,6 @@ function renderCloud(){
  var email=document.getElementById('cloudEmailInput');if(email&&document.activeElement!==email&& !email.value)email.value=cfg.email||'';
  renderCloudStatusOnly();
  var passLogin=document.getElementById('cloudPasswordLoginBtn');if(passLogin)passLogin.disabled=!(cfg.url&&cfg.key)||!!cloud.user;
- var setPass=document.getElementById('cloudSetPasswordBtn');if(setPass)setPass.disabled=!(cfg.url&&cfg.key);
- var resetPass=document.getElementById('cloudPasswordResetBtn');if(resetPass)resetPass.disabled=!(cfg.url&&cfg.key);
  var pass=document.getElementById('cloudPasswordInput');if(pass)pass.disabled=false;
  var sync=document.getElementById('cloudSyncBtn');if(sync)sync.disabled=!cloud.user;
  var up=document.getElementById('cloudUploadBtn');if(up)up.disabled=!cloud.user;
@@ -1321,56 +1309,24 @@ async function initCloud(){
  if(!cfg.url||!cfg.key){setCloudStatus('local','Облако не настроено. Локальные данные сохранены на этом устройстве.');return;}
  if(!window.supabase||!window.supabase.createClient){setCloudStatus('error','Не удалось загрузить модуль Supabase. Проверь интернет и перезагрузи приложение.');return;}
  try{
-  var hashParams=new URLSearchParams((location.hash||'').replace(/^#/,''));
-  var queryParams=new URLSearchParams(location.search||'');
-  cloud.recoveryPending=hashParams.get('type')==='recovery'||queryParams.get('type')==='recovery';
-
-  if(hashParams.get('error_description')){
-   setCloudStatus('error','Ошибка входа Supabase: '+decodeURIComponent(hashParams.get('error_description')));
-  }
-
   cloud.client=window.supabase.createClient(cfg.url,cfg.key,{
-   auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}
+   auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}
   });
-
-  // Subscribe immediately so PASSWORD_RECOVERY isn't missed during client initialization.
   cloud.client.auth.onAuthStateChange(function(event,session){
    var previous=cloud.user&&cloud.user.id;
    cloud.user=session&&session.user?session.user:null;
-
-   if(event==='PASSWORD_RECOVERY'){
-    cloud.recoveryPending=true;
-    setTimeout(function(){
-     renderCloud();
-     openPage('cloud',false);
-     setCloudStatus('auth','Ссылка для установки пароля подтверждена. Введи новый пароль и нажми «Установить / сменить пароль».');
-    },0);
-    return;
-   }
-
    renderCloud();
-   if(cloud.user&&cloud.user.id!==previous){
-    setTimeout(function(){connectCloudForUser();},0);
-   }
+   if(cloud.user&&cloud.user.id!==previous)setTimeout(function(){connectCloudForUser();},0);
    if(!cloud.user&&event==='SIGNED_OUT'){
     unsubscribeCloud();
-    setCloudStatus('auth','Войди по e-mail и паролю.');
+    setCloudStatus('auth','Войди по логину и паролю.');
    }
   });
-
   var sessionRes=await cloud.client.auth.getSession();
   if(sessionRes&&sessionRes.error)throw sessionRes.error;
   cloud.user=sessionRes&&sessionRes.data&&sessionRes.data.session?sessionRes.data.session.user:null;
-
-  if(cloud.user&&cloud.recoveryPending){
-   openPage('cloud',false);
-   setCloudStatus('auth','Режим установки пароля активен. Введи новый пароль и нажми «Установить / сменить пароль».');
-   renderCloud();
-   return;
-  }
-
   if(cloud.user)await connectCloudForUser();
-  else setCloudStatus('auth','Supabase подключён. Войди по e-mail и паролю.');
+  else setCloudStatus('auth','Supabase подключён. Войди по логину и паролю.');
  }catch(e){
   setCloudStatus('error','Ошибка подключения Supabase: '+(e&&e.message?e.message:e));
  }
@@ -2523,7 +2479,7 @@ cloudPasswordLoginBtn.addEventListener('click',async function(){
  var email=String(cloudEmailInput.value||cfg.email||'').trim().toLowerCase();
  var password=String(cloudPasswordInput.value||'');
  if(!cloud.client){alert('Подключение Supabase ещё не готово. Нажми «Проверить подключение».');return;}
- if(!email||email.indexOf('@')<1){alert('Укажи e-mail для входа.');return;}
+ if(!email||email.indexOf('@')<1){alert('Укажи логин (e-mail).');return;}
  if(password.length<8){alert('Пароль должен содержать минимум 8 символов.');return;}
  storeCloudConfig({url:cfg.url,key:cfg.key,email:email});
  setCloudStatus('syncing','Выполняю вход…');
@@ -2539,50 +2495,9 @@ cloudPasswordLoginBtn.addEventListener('click',async function(){
    setCloudStatus('error','Supabase не вернул пользователя после входа.');
   }
  }catch(e){
-  setCloudStatus('error','Не удалось войти: '+(e&&e.message?e.message:e));
- }
-});
-cloudSetPasswordBtn.addEventListener('click',async function(){
- var password=String(cloudPasswordInput.value||'');
- if(!cloud.client){alert('Подключение Supabase ещё не готово. Нажми «Проверить подключение».');return;}
- if(password.length<8){alert('Пароль должен содержать минимум 8 символов.');return;}
- setCloudStatus('syncing','Проверяю текущую сессию…');
- try{
-  var sr=await cloud.client.auth.getSession();
-  if(sr&&sr.error)throw sr.error;
-  var session=sr&&sr.data?sr.data.session:null;
-  cloud.user=session&&session.user?session.user:null;
-  renderCloud();
-  if(!cloud.user){
-   setCloudStatus('auth','Сессия не найдена. Используй «Получить ссылку для установки пароля» — пароль будет задан на отдельной странице.');
-   return;
-  }
-  setCloudStatus('syncing','Сохраняю новый пароль…');
-  var res=await cloud.client.auth.updateUser({password:password});
-  if(res.error)throw res.error;
-  cloud.user=res.data&&res.data.user?res.data.user:cloud.user;
-  cloud.recoveryPending=false;
-  try{history.replaceState({page:'cloud'},'',location.origin+location.pathname);}catch(cleanErr){}
-  setCloudStatus('synced','Пароль установлен. Теперь открой Oaks Finance с экрана Домой и войди по e-mail и этому паролю.');
-  renderCloud();
- }catch(e){
-  setCloudStatus('error','Не удалось установить пароль: '+(e&&e.message?e.message:e));
- }
-});
-cloudPasswordResetBtn.addEventListener('click',async function(){
- var cfg=getCloudConfig();
- var email=String(cloudEmailInput.value||cfg.email||'').trim().toLowerCase();
- if(!cloud.client){alert('Подключение Supabase ещё не готово. Нажми «Проверить подключение».');return;}
- if(!email||email.indexOf('@')<1){alert('Укажи e-mail для установки пароля.');return;}
- storeCloudConfig({url:cfg.url,key:cfg.key,email:email});
- var redirect=location.origin+location.pathname.replace(/index\.html$/,'')+'reset-password.html';
- setCloudStatus('syncing','Отправляю ссылку для установки пароля на '+email+'…');
- try{
-  var res=await cloud.client.auth.resetPasswordForEmail(email,{redirectTo:redirect});
-  if(res.error)throw res.error;
-  setCloudStatus('auth','Письмо отправлено. Открой ссылку в Safari — она должна открыть отдельную страницу «Установка пароля Oaks Finance».');
- }catch(e){
-  setCloudStatus('error','Не удалось отправить письмо: '+(e&&e.message?e.message:e));
+  var msg=e&&e.message?e.message:String(e||'Ошибка входа');
+  if(/email not confirmed/i.test(msg))msg='Пользователь не подтверждён. В Supabase → Authentication → Users создай пользователя с Auto Confirm User.';
+  setCloudStatus('error','Не удалось войти: '+msg);
  }
 });
 cloudShowPassword.addEventListener('change',function(){
@@ -2599,7 +2514,7 @@ cloudLogoutBtn.addEventListener('click',async function(){
  await cloud.client.auth.signOut();cloud.user=null;if(cloudPasswordInput)cloudPasswordInput.value='';unsubscribeCloud();setCloudStatus('auth','Выход выполнен. Локальные данные остаются на устройстве.');renderCloud();
 });
 
-resetBtn.addEventListener('click',function(){if(confirm('Сбросить все данные к исходной версии 7.6?')){state=clone(DEFAULT);state.plan=makePlan();save();renderAll();}});
+resetBtn.addEventListener('click',function(){if(confirm('Сбросить все данные к исходной версии 7.7?')){state=clone(DEFAULT);state.plan=makePlan();save();renderAll();}});
 initStorage().then(function(){
  var id=(location.hash||'').replace('#','');
  if(id&&document.getElementById(id))openPage(id,false);else showHome(false);
