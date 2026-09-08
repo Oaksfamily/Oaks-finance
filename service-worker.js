@@ -1,4 +1,4 @@
-const CACHE='oaks-finance-v77-no-email-1';
+const CACHE='oaks-finance-v78-life-calendar-1';
 const ASSETS=['./','./index.html','./manifest.json','./icon-180.png','./icon-192.png','./icon-512.png'];
 self.addEventListener('install',event=>{
  event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(ASSETS)));
