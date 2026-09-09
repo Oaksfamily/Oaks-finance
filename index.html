@@ -10,7 +10,7 @@
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
 <meta name="apple-mobile-web-app-title" content="Oaks Finance">
 <meta name="mobile-web-app-capable" content="yes">
-<title>Oaks Finance 7.8</title>
+<title>Oaks Finance 8.1</title>
 <style>
 :root{
  --bg:#f5f5f2;--bg-2:#ffffff;--card:#ffffff;--text:#090909;--muted:#5f5f5f;--line:#d8d8d2;
@@ -355,73 +355,284 @@ tbody tr:hover{background:#fff9db}
  .life-transfer-check{font-size:10px;gap:4px}
 }
 
+
+.readonly-box{
+ min-height:46px;display:flex;align-items:center;padding:9px 11px;margin-top:5px;
+ border:1px solid #ddd9ca;border-radius:12px;background:#f7f6f1;color:#222
+}
+.income-timeline{
+ border:1px solid #e5e1c8;border-radius:16px;padding:11px;background:#fbfaf6
+}
+.income-event-list{display:flex;flex-wrap:wrap;gap:7px;margin-top:9px}
+.income-event{
+ min-width:110px;flex:1 1 125px;padding:8px 9px;border:1px solid #e4e1d7;border-radius:12px;background:#fff
+}
+.income-event .d{font-size:10px;color:#6d6d73}
+.income-event .a{font-size:12px;font-weight:900;margin-top:3px}
+.income-event .n{font-size:9px;color:#777;margin-top:2px}
+.life-day.income{box-shadow:inset 0 3px 0 #8a8a85}
+.life-day.transfer-delayed{background:#fff2d8}
+.life-day.shortfall{background:#fff0ef}
+.life-day-income{font-size:8px;color:#555;margin-top:2px;line-height:1.2}
+.life-day-plan{font-size:8px;color:#6d5a00;margin-top:2px}
+.life-transfer-row{
+ grid-template-columns:105px minmax(0,1fr) 112px;
+}
+.life-transfer-meta{font-size:10px;color:#666;line-height:1.35}
+.life-transfer-meta b{color:#222}
+.life-transfer-shift{font-size:10px;color:#8a5c00;font-weight:800;margin-top:2px}
+.life-transfer-short{font-size:10px;color:#a5241c;font-weight:800;margin-top:2px}
+@media(max-width:640px){
+ .life-transfer-row{grid-template-columns:86px minmax(0,1fr) 92px}
+ .income-event{min-width:95px;flex-basis:105px}
+}
+
+
+.cycle-calendar-pair{
+ display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px
+}
+.cycle-calendar-month{
+ border:1px solid #ece7c5;border-radius:16px;overflow:hidden;background:#fff
+}
+.cycle-calendar-title{
+ padding:9px 10px;background:#f7f5ee;font-size:12px;font-weight:900
+}
+.life-day.outside-cycle{background:#f4f3ef;color:#aaa}
+.life-day.cycle-active{background:#fffdf3}
+.life-period-tag{
+ font-size:8px;font-weight:900;color:#5e5200;margin-top:2px
+}
+@media(max-width:720px){
+ .cycle-calendar-pair{grid-template-columns:1fr}
+}
+
+
+/* 8.1 — simplified home navigation */
+.app-header-compact{
+ display:flex;align-items:center;justify-content:space-between;gap:12px;
+ padding:14px 15px;margin-bottom:12px;border-radius:22px;
+ background:linear-gradient(180deg,#ffd400 0%,#ffcf00 100%);
+ border:1px solid rgba(0,0,0,.08);box-shadow:var(--shadow)
+}
+.app-header-compact .brand h1{font-size:24px;margin:0}
+.app-header-compact .brand .sub{margin-top:4px;max-width:none}
+.header-status{display:flex;align-items:center;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.header-status .badge,.header-status button{min-height:34px;font-size:11px;border-radius:999px;padding:7px 10px}
+
+.home-nav{display:grid;gap:14px;margin-bottom:14px}
+.home-search{
+ display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center
+}
+.home-search input{
+ min-height:46px;border-radius:14px;padding:10px 13px;font-size:16px;
+ border:1px solid #dedbd1;background:#fff
+}
+.home-search button{min-height:46px;padding:10px 13px;border-radius:14px}
+.home-group{display:grid;gap:8px}
+.home-group[hidden]{display:none!important}
+.home-group-title{
+ display:flex;align-items:center;justify-content:space-between;gap:8px;
+ font-size:13px;font-weight:900;color:#3b3b3f;padding:0 2px
+}
+.home-group-title span:last-child{font-size:10px;color:#8a8a90;font-weight:700}
+.quick-nav{
+ display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px
+}
+.quick-nav .tab{
+ min-height:92px;padding:12px!important;border-radius:18px!important;
+ display:grid!important;grid-template-columns:48px minmax(0,1fr)!important;
+ align-items:center!important;gap:11px!important;text-align:left!important;
+ background:#111!important;color:#fff!important;border:1px solid #111!important;
+ box-shadow:none!important
+}
+.quick-nav .tab .tab-tile{
+ width:48px!important;height:48px!important;border-radius:15px!important;
+ background:#ffd400!important;color:#111!important;border:0!important;
+ font-size:23px!important
+}
+.quick-nav .tab .tab-label{
+ max-width:none!important;min-height:0!important;font-size:14px!important;
+ line-height:1.15!important;color:#fff!important;font-weight:850!important
+}
+.quick-nav .tab .tab-desc{
+ grid-column:2;font-size:10px;line-height:1.25;color:rgba(255,255,255,.68);
+ margin-top:-7px
+}
+
+.nav-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.nav-item.tab{
+ min-height:66px;padding:8px 10px!important;border-radius:16px!important;
+ display:grid!important;grid-template-columns:42px minmax(0,1fr)!important;
+ align-items:center!important;gap:9px!important;text-align:left!important;
+ background:#fff!important;border:1px solid #e5e1d8!important;
+ box-shadow:none!important
+}
+.nav-item.tab .tab-tile{
+ width:42px!important;height:42px!important;border-radius:13px!important;
+ background:#f0efeb!important;color:#2e2e33!important;border:0!important;
+ font-size:20px!important
+}
+.nav-item.tab .tab-label{
+ max-width:none!important;min-height:0!important;font-size:12px!important;
+ line-height:1.15!important;color:#222!important;font-weight:820!important
+}
+.nav-item.tab .tab-desc{
+ grid-column:2;font-size:9px;line-height:1.25;color:#777;margin-top:-5px
+}
+.nav-item.tab.active,.quick-nav .tab.active{outline:2px solid #ffd400;outline-offset:1px}
+
+.utility-details{
+ margin-bottom:14px;border:1px solid #e3dfd4;border-radius:18px;background:#fff;overflow:hidden
+}
+.utility-details>summary{
+ min-height:52px;padding:12px 14px;display:flex;align-items:center;justify-content:space-between;
+ cursor:pointer;font-weight:850;list-style:none
+}
+.utility-details>summary::-webkit-details-marker{display:none}
+.utility-details>summary:after{content:'⌄';font-size:18px;color:#777}
+.utility-details[open]>summary:after{content:'⌃'}
+.utility-body{padding:0 12px 12px}
+.utility-actions{
+ display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:10px 0
+}
+.utility-actions button{min-height:42px;font-size:12px}
+.utility-danger{border-color:#e8c4c1!important;color:#9b2d26!important;background:#fff7f6!important}
+#storageInfo.utility-card,#backupCard.utility-card{
+ margin:0 0 10px!important;border-radius:14px;box-shadow:none
+}
+
+.no-nav-results{
+ display:none;padding:14px;text-align:center;border:1px dashed #d8d4c9;border-radius:14px;
+ color:#777;font-size:12px;background:#faf9f5
+}
+.no-nav-results.show{display:block}
+
+@media(max-width:640px){
+ .app-header-compact{align-items:flex-start}
+ .app-header-compact .brand .sub{font-size:10px}
+ .header-status{max-width:130px}
+ .header-status #dbStatus{display:none}
+ .quick-nav{grid-template-columns:1fr 1fr}
+ .quick-nav .tab{grid-template-columns:42px minmax(0,1fr)!important;min-height:86px;padding:10px!important}
+ .quick-nav .tab .tab-tile{width:42px!important;height:42px!important}
+ .quick-nav .tab .tab-label{font-size:12px!important}
+ .nav-list{grid-template-columns:1fr}
+ .nav-item.tab{min-height:60px}
+ .utility-actions{grid-template-columns:1fr 1fr}
+}
+@media(max-width:370px){
+ .quick-nav{grid-template-columns:1fr}
+ .home-search{grid-template-columns:1fr}
+ .home-search button{display:none}
+}
+
 </style>
 </head>
 <body>
 <div class="app">
-<header>
- <div><h1>Oaks Finance 7.8</h1><div class="sub">Обзор · капитал · доходы · расходы · фонды · банковские счета</div></div>
- <div class="row">
- <span class="badge" id="dbStatus">База: загрузка…</span>
- <button class="secondary" id="cloudHeaderBtn" type="button">☁ Локально</button>
- <button class="secondary" id="exportBtn">Резервная копия</button>
- <button class="secondary" id="showJsonBtn">Показать JSON</button>
- <button class="secondary" id="importBtn">Импорт JSON</button>
- <input id="importFile" type="file" accept=".json,application/json" style="display:none">
- <button class="secondary" id="resetBtn">Сбросить</button>
-</div>
-</header>
-
-<div class="card panel-muted" id="storageInfo" style="margin-bottom:10px">
- <div class="row space">
-  <div>
-   <h2 style="margin-bottom:4px">Постоянное хранение данных</h2>
-   <div class="small">Все изменения сохраняются автоматически. Локальная база — IndexedDB, резерв — localStorage. При подключении Supabase данные синхронизируются между устройствами.</div>
-  </div>
-  <span class="badge" id="lastSavedAt">Загрузка…</span>
+<div class="app-header-compact">
+ <div class="brand">
+  <h1>Oaks Finance 8.1</h1>
+  <div class="sub">Личный финансовый план</div>
  </div>
- <div class="small" style="margin-top:6px">После публикации на одном HTTPS-адресе обновление интерфейса не стирает базу. На iPhone приложение можно добавить на экран Домой.</div>
- <div class="small" style="margin-top:4px"><b>Oaks Finance 7.8:</b> локальная база остаётся резервом, а Supabase может стать общей базой для iPhone, Mac и других устройств.</div>
-</div>
-
-<div class="menu-screen"><div class="tabs">
- <button class="tab active" data-tab="overview"><span class="tab-tile">⌂</span><span class="tab-label">Обзор</span></button>
- <button class="tab" data-tab="capital"><span class="tab-tile">◫</span><span class="tab-label">Капитал</span></button>
- <button class="tab" data-tab="income"><span class="tab-tile">↓</span><span class="tab-label">Доход</span></button>
- <button class="tab" data-tab="incomeplan"><span class="tab-tile">▤</span><span class="tab-label">Доход план</span></button>
- <button class="tab" data-tab="monthplan"><span class="tab-tile">☷</span><span class="tab-label">План месяца</span></button>
- <button class="tab" data-tab="mandatory"><span class="tab-tile">☑</span><span class="tab-label">Обязательные платежи</span></button>
- <button class="tab" data-tab="life"><span class="tab-tile">◌</span><span class="tab-label">Расход жизнь</span></button>
- <button class="tab" data-tab="lifetransfers"><span class="tab-tile">▦</span><span class="tab-label">Переводы на жизнь</span></button>
- <button class="tab" data-tab="holidays"><span class="tab-tile">✦</span><span class="tab-label">Расход праздники</span></button>
- <button class="tab" data-tab="funds"><span class="tab-tile">◔</span><span class="tab-label">Фонды</span></button>
- <button class="tab" data-tab="banks"><span class="tab-tile">↔</span><span class="tab-label">Счета банков</span></button>
- <button class="tab" data-tab="cloud"><span class="tab-tile">☁</span><span class="tab-label">Облако</span></button>
-</div></div>
-
-<div class="card panel-muted" id="backupCard" style="margin-bottom:10px">
- <div class="row space">
-  <div>
-   <h2 style="margin-bottom:4px">Резервная копия данных</h2>
-   <div class="small">На iPhone надёжнее всего нажать «Сохранить JSON» и выбрать «Сохранить в Файлы». Если меню не появится — используй «Показать JSON».</div>
-  </div>
-  <span class="badge" id="saveStateBadge">Данные сохраняются автоматически</span>
- </div>
- <div id="jsonBox" class="jsonbox">
-  <textarea id="jsonText" readonly aria-label="JSON резервной копии"></textarea>
-  <div class="row" style="margin-top:8px">
-   <button id="selectJsonBtn" type="button">Выделить весь JSON</button>
-   <button id="copyJsonBtn" type="button" class="secondary">Скопировать</button>
-   <button id="hideJsonBtn" type="button" class="secondary">Скрыть</button>
-  </div>
-  <div class="status" id="jsonStatus"></div>
+ <div class="header-status">
+  <span class="badge" id="dbStatus">База: загрузка…</span>
+  <button class="secondary" id="cloudHeaderBtn" type="button">☁ Локально</button>
  </div>
 </div>
 
+<div class="menu-screen">
+ <div class="home-nav">
+  <div class="home-search">
+   <input id="navSearchInput" type="search" placeholder="Найти раздел…" autocomplete="off" aria-label="Найти раздел">
+   <button id="navSearchClear" type="button" class="secondary">Очистить</button>
+  </div>
+
+  <div class="home-group" data-nav-group>
+   <div class="home-group-title"><span>Быстрый доступ</span><span>главное</span></div>
+   <div class="quick-nav">
+    <button class="tab nav-searchable" data-tab="overview" data-search="обзор финансы главное"><span class="tab-tile">⌂</span><span class="tab-label">Обзор</span><span class="tab-desc">Ключевые цифры и движение денег</span></button>
+    <button class="tab nav-searchable" data-tab="monthplan" data-search="план месяца расходы галки"><span class="tab-tile">☷</span><span class="tab-label">План месяца</span><span class="tab-desc">Какие расходы учитывать</span></button>
+    <button class="tab nav-searchable" data-tab="lifetransfers" data-search="переводы жизнь календарь недели 8"><span class="tab-tile">▦</span><span class="tab-label">Переводы на жизнь</span><span class="tab-desc">Цикл с 8-го по 8-е</span></button>
+    <button class="tab nav-searchable" data-tab="income" data-search="доход поступления факт деньги"><span class="tab-tile">↓</span><span class="tab-label">Доход</span><span class="tab-desc">Фактические поступления</span></button>
+   </div>
+  </div>
+
+  <div class="home-group" data-nav-group>
+   <div class="home-group-title"><span>Планирование</span><span>что предстоит</span></div>
+   <div class="nav-list">
+    <button class="tab nav-item nav-searchable" data-tab="incomeplan" data-search="доход план прогноз"><span class="tab-tile">▤</span><span class="tab-label">План доходов</span><span class="tab-desc">Прогноз поступлений</span></button>
+    <button class="tab nav-item nav-searchable" data-tab="mandatory" data-search="обязательные платежи ипотека коммунальные"><span class="tab-tile">☑</span><span class="tab-label">Обязательные</span><span class="tab-desc">Ипотеки, ЖКУ, страховки</span></button>
+    <button class="tab nav-item nav-searchable" data-tab="life" data-search="расход жизнь еда дети бензин бытовые"><span class="tab-tile">◌</span><span class="tab-label">Расходы на жизнь</span><span class="tab-desc">Регулярный бытовой бюджет</span></button>
+    <button class="tab nav-item nav-searchable" data-tab="holidays" data-search="праздники дни рождения подарки"><span class="tab-tile">✦</span><span class="tab-label">Праздники</span><span class="tab-desc">Дни рождения и события</span></button>
+   </div>
+  </div>
+
+  <div class="home-group" data-nav-group>
+   <div class="home-group-title"><span>Капитал и счета</span><span>что уже есть</span></div>
+   <div class="nav-list">
+    <button class="tab nav-item nav-searchable" data-tab="capital" data-search="капитал активы долги имущество"><span class="tab-tile">◫</span><span class="tab-label">Капитал</span><span class="tab-desc">Активы, долги, чистый капитал</span></button>
+    <button class="tab nav-item nav-searchable" data-tab="funds" data-search="фонды накопления цели резерв"><span class="tab-tile">◔</span><span class="tab-label">Фонды</span><span class="tab-desc">Накопления и цели</span></button>
+    <button class="tab nav-item nav-searchable" data-tab="banks" data-search="банки счета переводы распределение"><span class="tab-tile">↔</span><span class="tab-label">Банковские счета</span><span class="tab-desc">Куда распределять деньги</span></button>
+   </div>
+  </div>
+
+  <div class="home-group" data-nav-group>
+   <div class="home-group-title"><span>Система</span><span>редко используется</span></div>
+   <div class="nav-list">
+    <button class="tab nav-item nav-searchable" data-tab="cloud" data-search="облако supabase синхронизация вход"><span class="tab-tile">☁</span><span class="tab-label">Облако</span><span class="tab-desc">Вход и синхронизация</span></button>
+   </div>
+  </div>
+
+  <div id="navNoResults" class="no-nav-results">Раздел не найден. Попробуй другое слово.</div>
+ </div>
+
+ <details class="utility-details">
+  <summary><span>⚙ Сервис и данные</span><span class="small">резервные копии · импорт · сброс</span></summary>
+  <div class="utility-body">
+   <div class="card panel-muted utility-card" id="storageInfo">
+    <div class="row space">
+     <div>
+      <h2 style="margin-bottom:4px">Хранение данных</h2>
+      <div class="small">Изменения сохраняются автоматически. IndexedDB — локальная копия, Supabase — общая база.</div>
+     </div>
+     <span class="badge" id="lastSavedAt">Загрузка…</span>
+    </div>
+   </div>
+
+   <div class="utility-actions">
+    <button class="secondary" id="exportBtn">Сохранить JSON</button>
+    <button class="secondary" id="showJsonBtn">Показать JSON</button>
+    <button class="secondary" id="importBtn">Импорт JSON</button>
+    <button class="secondary utility-danger" id="resetBtn">Сбросить данные</button>
+    <input id="importFile" type="file" accept=".json,application/json" style="display:none">
+   </div>
+
+   <div class="card panel-muted utility-card" id="backupCard">
+    <div class="row space">
+     <div>
+      <h2 style="margin-bottom:4px">Резервная копия</h2>
+      <div class="small">На iPhone используй «Сохранить JSON» и сохрани файл в «Файлы».</div>
+     </div>
+     <span class="badge" id="saveStateBadge">Автосохранение</span>
+    </div>
+    <div id="jsonBox" class="jsonbox">
+     <textarea id="jsonText" readonly aria-label="JSON резервной копии"></textarea>
+     <div class="row" style="margin-top:8px">
+      <button id="selectJsonBtn" type="button">Выделить JSON</button>
+      <button id="copyJsonBtn" type="button" class="secondary">Скопировать</button>
+      <button id="hideJsonBtn" type="button" class="secondary">Скрыть</button>
+     </div>
+     <div class="status" id="jsonStatus"></div>
+    </div>
+   </div>
+  </div>
+ </details>
+</div>
 
 <section id="overview">
  <div class="page-home-wrap">
-  <button class="home-btn" type="button" data-home>⌂ Домой</button>
+  <button class="home-btn" type="button" data-home>← Меню</button>
   <span class="page-caption">Oaks Finance</span>
  </div>
  <div class="card hero" style="margin-bottom:12px">
@@ -509,7 +720,7 @@ tbody tr:hover{background:#fff9db}
 
 <section id="capital">
  <div class="page-home-wrap">
-  <button class="home-btn" type="button" data-home>⌂ Домой</button>
+  <button class="home-btn" type="button" data-home>← Меню</button>
   <span class="page-caption">Oaks Finance</span>
  </div>
  <div class="notice" style="margin-bottom:10px">
@@ -540,7 +751,7 @@ tbody tr:hover{background:#fff9db}
 
 <section id="income">
  <div class="page-home-wrap">
-  <button class="home-btn" type="button" data-home>⌂ Домой</button>
+  <button class="home-btn" type="button" data-home>← Меню</button>
   <span class="page-caption">Oaks Finance</span>
  </div>
  <div class="card">
@@ -554,7 +765,7 @@ tbody tr:hover{background:#fff9db}
    <div class="card" style="padding:12px"><div class="klabel">Колонок дохода</div><div class="kval">7</div></div>
   </div>
   <div class="notice" style="margin-top:10px">
-   <b>Supabase подключён к Oaks Finance 7.8.</b> Вход — только по логину и паролю. Приложение не отправляет и не ждёт никаких писем.
+   <b>Supabase подключён к Oaks Finance 8.1.</b> Вход — только по логину и паролю. Приложение не отправляет и не ждёт никаких писем.
   </div>
   <div class="scroll" style="margin-top:12px">
    <table style="min-width:1120px"><thead><tr><th>Месяц</th><th>Пособие 8 день</th><th>10 день</th><th>15 день</th><th>25 день</th><th>28 день</th><th>Студия доход</th><th>Доход прочие</th><th>Итого</th></tr></thead><tbody id="historyBody"></tbody></table>
@@ -568,7 +779,7 @@ tbody tr:hover{background:#fff9db}
 
 <section id="incomeplan">
  <div class="page-home-wrap">
-  <button class="home-btn" type="button" data-home>⌂ Домой</button>
+  <button class="home-btn" type="button" data-home>← Меню</button>
   <span class="page-caption">Oaks Finance</span>
  </div>
  <div class="card">
@@ -598,7 +809,7 @@ tbody tr:hover{background:#fff9db}
 
 <section id="monthplan">
  <div class="page-home-wrap">
-  <button class="home-btn" type="button" data-home>⌂ Домой</button>
+  <button class="home-btn" type="button" data-home>← Меню</button>
   <span class="page-caption">Oaks Finance</span>
  </div>
  <div class="card">
@@ -609,7 +820,7 @@ tbody tr:hover{background:#fff9db}
 
   <div class="month-plan-toolbar" style="margin-top:10px">
    <label class="small">Год<select id="expensePlanYear"></select></label>
-   <label class="small">Месяц<select id="expensePlanMonth"></select></label>
+   <label class="small">Месяц начала цикла<select id="expensePlanMonth"></select></label>
   </div>
 
   <div class="month-plan-summary">
@@ -641,7 +852,7 @@ tbody tr:hover{background:#fff9db}
 
 <section id="mandatory">
  <div class="page-home-wrap">
-  <button class="home-btn" type="button" data-home>⌂ Домой</button>
+  <button class="home-btn" type="button" data-home>← Меню</button>
   <span class="page-caption">Oaks Finance</span>
  </div>
  <div class="grid4">
@@ -681,7 +892,7 @@ tbody tr:hover{background:#fff9db}
 
 <section id="life">
  <div class="page-home-wrap">
-  <button class="home-btn" type="button" data-home>⌂ Домой</button>
+  <button class="home-btn" type="button" data-home>← Меню</button>
   <span class="page-caption">Oaks Finance</span>
  </div>
  <div class="grid4">
@@ -704,7 +915,7 @@ tbody tr:hover{background:#fff9db}
 
 <section id="lifetransfers">
  <div class="page-home-wrap">
-  <button class="home-btn" type="button" data-home>⌂ Домой</button>
+  <button class="home-btn" type="button" data-home>← Меню</button>
   <span class="page-caption">Oaks Finance</span>
  </div>
 
@@ -712,7 +923,7 @@ tbody tr:hover{background:#fff9db}
   <div class="section-title">
    <div>
     <h2 style="margin-bottom:4px">Календарь переводов на жизнь</h2>
-    <div class="small">Планирует один перевод каждую неделю и распределяет месячный бюджет «Расход жизнь» по календарю.</div>
+    <div class="small">Бюджетный цикл идёт с 8-го числа до следующего 8-го. Недели разбиваются внутри этого цикла, а фактические переводы учитывают даты поступлений.</div>
    </div>
   </div>
  </div>
@@ -725,53 +936,44 @@ tbody tr:hover{background:#fff9db}
    <label class="small">Месяц
     <select id="lifeTransferMonth"></select>
    </label>
-   <label class="small">День перевода
-    <select id="lifeTransferWeekday">
-     <option value="0">Понедельник</option>
-     <option value="1">Вторник</option>
-     <option value="2">Среда</option>
-     <option value="3">Четверг</option>
-     <option value="4">Пятница</option>
-     <option value="5">Суббота</option>
-     <option value="6">Воскресенье</option>
-    </select>
-   </label>
-   <label class="small">Расчёт
-    <select id="lifeTransferMode">
-     <option value="auto">Ровно по бюджету месяца</option>
-     <option value="fixed">Фиксированная сумма каждую неделю</option>
-    </select>
-   </label>
-  </div>
-
-  <div id="lifeTransferFixedWrap" class="life-transfer-fixed" style="margin-top:8px">
-   <label class="small">Фиксированная сумма / неделю
-    <input id="lifeTransferFixedAmount" type="number" min="0" step="100" inputmode="numeric" placeholder="Например 40 000">
-   </label>
+   <div class="small">
+    Период цикла
+    <div class="readonly-box"><b id="lifeTransferCycleRange">—</b></div>
+   </div>
+   <div class="small">
+    Правило
+    <div class="readonly-box"><b>8-е → следующее 8-е</b></div>
+   </div>
   </div>
 
   <div class="life-transfer-summary">
-   <div class="card metric-card"><div class="klabel">Бюджет жизни / месяц</div><div class="kval" id="lifeTransferBudget">—</div><div class="ksmall">из «Плана месяца»</div></div>
-   <div class="card metric-card"><div class="klabel">Переводов в месяце</div><div class="kval" id="lifeTransferCount">—</div><div class="ksmall" id="lifeTransferDatesText"></div></div>
-   <div class="card metric-card"><div class="klabel">Один перевод</div><div class="kval" id="lifeTransferWeekly">—</div><div class="ksmall" id="lifeTransferWeeklyNote"></div></div>
+   <div class="card metric-card"><div class="klabel">Бюджет жизни / цикл</div><div class="kval" id="lifeTransferBudget">—</div><div class="ksmall">берётся из месяца начала цикла</div></div>
+   <div class="card metric-card"><div class="klabel">Периодов в цикле</div><div class="kval" id="lifeTransferCount">—</div><div class="ksmall" id="lifeTransferDatesText"></div></div>
+   <div class="card metric-card"><div class="klabel">Полная неделя</div><div class="kval" id="lifeTransferWeekly">—</div><div class="ksmall" id="lifeTransferWeeklyNote"></div></div>
    <div class="card metric-card"><div class="klabel">Осталось перевести</div><div class="kval good" id="lifeTransferRemaining">—</div><div class="ksmall" id="lifeTransferDoneText"></div></div>
   </div>
 
   <div class="notice" id="lifeTransferBalanceNotice" style="margin-top:10px"></div>
 
-  <div class="life-calendar">
-   <div class="life-calendar-head">
-    <div>Пн</div><div>Вт</div><div>Ср</div><div>Чт</div><div>Пт</div><div>Сб</div><div>Вс</div>
+  <div class="income-timeline" style="margin-top:10px">
+   <div class="row space">
+    <div>
+     <h3 style="margin:0">Поступления цикла</h3>
+     <div class="small">Учитываются все поступления, попадающие внутрь цикла с 8-го до следующего 8-го. Дата следующего 8-го относится уже к новому циклу.</div>
+    </div>
+    <div class="small" id="lifeTransferIncomeSource"></div>
    </div>
-   <div class="life-calendar-grid" id="lifeTransferCalendar"></div>
+   <div id="lifeTransferIncomeList" class="income-event-list"></div>
   </div>
+
+  <div class="cycle-calendar-pair" id="lifeTransferCalendars"></div>
 
   <div class="row space" style="margin-top:12px">
    <div>
-    <h3 style="margin:0">Переводы месяца</h3>
-    <div class="small">Отмечай перевод после выполнения — отметка сохранится и синхронизируется между устройствами.</div>
+    <h3 style="margin:0">Переводы цикла</h3>
+    <div class="small">Каждая строка — недельный период внутри цикла. Последний период может быть неполным. «Перевести» — первая дата, когда после поступлений и резерва обязательных платежей хватает денег.</div>
    </div>
-   <button class="secondary" id="lifeTransferClearMonth" type="button">Снять отметки месяца</button>
+   <button class="secondary" id="lifeTransferClearMonth" type="button">Снять отметки цикла</button>
   </div>
   <div class="life-transfer-list" id="lifeTransferList"></div>
 
@@ -783,7 +985,7 @@ tbody tr:hover{background:#fff9db}
 
 <section id="holidays">
  <div class="page-home-wrap">
-  <button class="home-btn" type="button" data-home>⌂ Домой</button>
+  <button class="home-btn" type="button" data-home>← Меню</button>
   <span class="page-caption">Oaks Finance</span>
  </div>
  <div class="grid4">
@@ -805,7 +1007,7 @@ tbody tr:hover{background:#fff9db}
 </section>
 <section id="funds">
  <div class="page-home-wrap">
-  <button class="home-btn" type="button" data-home>⌂ Домой</button>
+  <button class="home-btn" type="button" data-home>← Меню</button>
   <span class="page-caption">Oaks Finance</span>
  </div>
 
@@ -892,7 +1094,7 @@ tbody tr:hover{background:#fff9db}
 
 <section id="banks">
  <div class="page-home-wrap">
-  <button class="home-btn" type="button" data-home>⌂ Домой</button>
+  <button class="home-btn" type="button" data-home>← Меню</button>
   <span class="page-caption">Oaks Finance</span>
  </div>
  <div class="grid4">
@@ -954,7 +1156,7 @@ tbody tr:hover{background:#fff9db}
 
 <section id="cloud">
  <div class="page-home-wrap">
-  <button class="home-btn" type="button" data-home>⌂ Домой</button>
+  <button class="home-btn" type="button" data-home>← Меню</button>
   <span class="page-caption">Oaks Finance</span>
  </div>
 
@@ -974,7 +1176,7 @@ tbody tr:hover{background:#fff9db}
   </div>
 
   <div class="notice">
-   <b>Supabase уже подключён к Oaks Finance 7.8.</b> Project URL и публичный Publishable key встроены в приложение. Для синхронизации на новом устройстве нужен только вход по e-mail.
+   <b>Supabase уже подключён к Oaks Finance 8.1.</b> Project URL и публичный Publishable key встроены в приложение. Для синхронизации на новом устройстве нужен только вход по e-mail.
   </div>
 
   <div class="cloud-config-grid" style="margin-top:10px">
@@ -1164,7 +1366,7 @@ var DEFAULT={
  overviewSettings:{year:2026,month:8},
  expensePlanSettings:{year:2026,month:9},
  expensePlan:{annual:{},monthly:{}},
- lifeTransferSettings:{year:2026,month:9,weekday:0,mode:'auto',fixedAmount:'',completed:{}}
+ lifeTransferSettings:{year:2026,month:9,completed:{}}
 };
 
 var state=clone(DEFAULT);
@@ -1248,10 +1450,8 @@ function ensureLifeTransferSettings(){
  var s=state.lifeTransferSettings;
  if(s.year===undefined)s.year=2026;
  if(s.month===undefined)s.month=9;
- if(s.weekday===undefined)s.weekday=0;
- if(!s.mode)s.mode='auto';
- if(s.fixedAmount===undefined)s.fixedAmount='';
  if(!s.completed||typeof s.completed!=='object')s.completed={};
+ // Legacy 7.8 fields are intentionally ignored: schedule is anchored at 08.09.2026.
 }
 
 function getOrCreateDeviceId(){
@@ -1267,13 +1467,13 @@ function ensureSyncMeta(){
  if(!state._sync||typeof state._sync!=='object')state._sync={};
  if(!state._sync.modifiedAt)state._sync.modifiedAt='';
  if(!state._sync.deviceId)state._sync.deviceId=getOrCreateDeviceId();
- if(!state._sync.appVersion)state._sync.appVersion='7.8';
+ if(!state._sync.appVersion)state._sync.appVersion='8.1';
 }
 function touchSyncMeta(){
  ensureSyncMeta();
  state._sync.modifiedAt=new Date().toISOString();
  state._sync.deviceId=getOrCreateDeviceId();
- state._sync.appVersion='7.8';
+ state._sync.appVersion='8.1';
 }
 
 function openDb(){
@@ -1789,101 +1989,333 @@ function rubTransfer(n){
  return new Intl.NumberFormat('ru-RU',{minimumFractionDigits:hasKopecks?2:0,maximumFractionDigits:2}).format(v)+' ₽';
 }
 function pad2(n){return String(n).padStart(2,'0');}
-function lifeTransferIso(y,m,d){return String(y)+'-'+pad2(m)+'-'+pad2(d);}
-function lifeTransferMonthDates(y,m,weekdayMonday0){
- var out=[];
- var days=new Date(y,m,0).getDate();
- for(var d=1;d<=days;d++){
-  var jsDay=new Date(y,m-1,d).getDay();
-  var monday0=(jsDay+6)%7;
-  if(monday0===Number(weekdayMonday0))out.push(d);
+function utcDate(y,m,d){return new Date(Date.UTC(y,m-1,d));}
+function utcParts(dt){return {y:dt.getUTCFullYear(),m:dt.getUTCMonth()+1,d:dt.getUTCDate()};}
+function addUtcDays(dt,n){return new Date(dt.getTime()+n*86400000);}
+function daysBetweenUtc(a,b){return Math.floor((b.getTime()-a.getTime())/86400000);}
+function dateKey(dt){
+ var p=utcParts(dt);return p.y+'-'+pad2(p.m)+'-'+pad2(p.d);
+}
+function formatDM(dt){
+ var p=utcParts(dt);return pad2(p.d)+'.'+pad2(p.m);
+}
+function formatDMY(dt){
+ var p=utcParts(dt);return pad2(p.d)+'.'+pad2(p.m)+'.'+p.y;
+}
+function formatRangeShort(a,bExclusive){
+ var last=addUtcDays(bExclusive,-1);
+ return formatDM(a)+'–'+formatDM(last);
+}
+function lifeTransferAnchorDate(){return utcDate(2026,9,8);}
+function nextMonthParts(y,m){return m===12?{y:y+1,m:1}:{y:y,m:m+1};}
+
+function lifeTransferCycle(y,m){
+ var start=utcDate(y,m,8);
+ var np=nextMonthParts(y,m);
+ var end=utcDate(np.y,np.m,8); // exclusive: next cycle starts here
+ if(end<=lifeTransferAnchorDate())return null;
+ if(start<lifeTransferAnchorDate())start=lifeTransferAnchorDate();
+ var days=daysBetweenUtc(start,end);
+ if(days<=0)return null;
+ return {start:start,end:end,days:days,startY:y,startM:m,nextY:np.y,nextM:np.m};
+}
+function lifeTransferPeriods(y,m){
+ var cycle=lifeTransferCycle(y,m);
+ if(!cycle)return [];
+ var out=[],cursor=new Date(cycle.start.getTime()),idx=1;
+ while(cursor<cycle.end&&idx<=6){
+  var periodEnd=new Date(Math.min(addUtcDays(cursor,7).getTime(),cycle.end.getTime()));
+  out.push({
+   index:idx,
+   start:new Date(cursor.getTime()),
+   end:periodEnd,
+   days:daysBetweenUtc(cursor,periodEnd)
+  });
+  cursor=periodEnd;idx++;
  }
  return out;
 }
-function lifeTransferBudgetForMonth(y,m){
+function lifeTransferBudgetForCycle(y,m){
  return plannedExpenseSummary(y,m).life;
+}
+function incomeFallbackRow(y,m){
+ var benefitActive=(y===2025&&m>=11)||(y===2026)||(y===2027&&m<=4);
+ return {
+  benefit:benefitActive?58000:'',
+  d10:y>=2026?147900+(y-2026)*10000:'',
+  d15:y>=2026?monthlyAverageForD15(m):'',
+  d25:y>=2026?d25Base():'',
+  d28:y>=2026?((m===2||m===3)?'':d28Base()):'',
+  studio:(y>2027||(y===2027&&m>=3))?35000:'',
+  other:''
+ };
+}
+function lifeTransferIncomeRow(y,m){
+ var actual=state.history&&state.history[y]&&state.history[y][m]?state.history[y][m]:monthRow();
+ var plan=state.plan&&state.plan[y]&&state.plan[y][m]?state.plan[y][m]:monthRow();
+ var fallback=incomeFallbackRow(y,m);
+ var row=monthRow(),sources={};
+ COLS.forEach(function(k){
+  var av=actual[k];
+  if(av!==''&&av!==null&&av!==undefined){
+   row[k]=av;sources[k]='факт';
+  }else if(plan[k]!==''&&plan[k]!==null&&plan[k]!==undefined){
+   row[k]=plan[k];sources[k]='план';
+  }else{
+   row[k]=fallback[k];sources[k]=fallback[k]!==''?'прогноз':'нет данных';
+  }
+ });
+ return {row:row,sources:sources};
+}
+function lifeTransferIncomeEventsForMonth(y,m){
+ var info=lifeTransferIncomeRow(y,m),r=info.row,s=info.sources;
+ var lastDay=new Date(Date.UTC(y,m,0)).getUTCDate();
+ var defs=[
+  {k:'benefit',day:8,name:'Пособие'},
+  {k:'d10',day:10,name:'Доход 10-го'},
+  {k:'d15',day:15,name:'Доход 15-го'},
+  {k:'d25',day:25,name:'Доход 25-го'},
+  {k:'d28',day:28,name:'Доход 28-го'},
+  {k:'studio',day:lastDay,name:'Студия · без даты'},
+  {k:'other',day:lastDay,name:'Прочее · без даты'}
+ ];
+ var events=[];
+ defs.forEach(function(x){
+  var amount=num(r[x.k]);
+  if(amount>0){
+   var dt=utcDate(y,m,Math.min(x.day,lastDay));
+   events.push({key:x.k,date:dt,name:x.name,amount:amount,source:s[x.k]});
+  }
+ });
+ return {events:events,sources:s};
+}
+function lifeTransferIncomeEventsForCycle(y,m){
+ var cycle=lifeTransferCycle(y,m);
+ if(!cycle)return {events:[],sources:{}};
+ var next=nextMonthParts(y,m);
+ var a=lifeTransferIncomeEventsForMonth(y,m);
+ var b=lifeTransferIncomeEventsForMonth(next.y,next.m);
+ var all=a.events.concat(b.events).filter(function(e){
+  return e.date>=cycle.start&&e.date<cycle.end;
+ });
+ all.sort(function(x,z){return x.date-z.date;});
+ var sources={};
+ Object.keys(a.sources).forEach(function(k){sources[k]=a.sources[k];});
+ Object.keys(b.sources).forEach(function(k){if(!sources[k]||sources[k]==='нет данных')sources[k]=b.sources[k];});
+ return {events:all,sources:sources};
+}
+function cumulativeIncomeAtDate(events,dt){
+ return events.reduce(function(sum,e){return sum+(e.date<=dt?e.amount:0);},0);
+}
+function nextFundingDate(events,fromDate,cycleEnd,mandatory,alreadyAllocated,target){
+ for(var d=new Date(fromDate.getTime());d<cycleEnd;d=addUtcDays(d,1)){
+  var capacity=Math.max(0,cumulativeIncomeAtDate(events,d)-mandatory-alreadyAllocated);
+  if(capacity+0.000001>=target)return new Date(d.getTime());
+ }
+ return null;
 }
 function lifeTransferPlan(y,m){
  ensureLifeTransferSettings();
  var s=state.lifeTransferSettings;
- var days=lifeTransferMonthDates(y,m,s.weekday);
- var budget=lifeTransferBudgetForMonth(y,m);
- var amount=0;
- if(s.mode==='fixed')amount=num(s.fixedAmount);
- else amount=days.length?budget/days.length:0;
- var rows=days.map(function(d){
-  var iso=lifeTransferIso(y,m,d);
-  return {day:d,iso:iso,amount:amount,done:!!s.completed[iso]};
+ var cycle=lifeTransferCycle(y,m);
+ if(!cycle){
+  return {cycle:null,periods:[],rows:[],budget:0,fullWeekAmount:0,planned:0,done:0,remaining:0,mandatory:0,totalIncome:0,afterMandatory:0,events:[],incomeSources:{},uncovered:0};
+ }
+ var periods=lifeTransferPeriods(y,m);
+ var budget=lifeTransferBudgetForCycle(y,m);
+ var incomeInfo=lifeTransferIncomeEventsForCycle(y,m);
+ var events=incomeInfo.events;
+ var mandatory=mandatoryDueForMonth(y,m); // budget-cycle month
+ var alreadyAllocated=0,rawAllocated=0,rows=[];
+
+ periods.forEach(function(p,idx){
+  var amount;
+  if(idx===periods.length-1){
+   amount=Math.max(0,budget-rawAllocated);
+  }else{
+   amount=cycle.days?budget*(p.days/cycle.days):0;
+   rawAllocated+=amount;
+  }
+  var actualDate=nextFundingDate(events,p.start,cycle.end,mandatory,alreadyAllocated,amount);
+  var supported=!!actualDate;
+  if(supported)alreadyAllocated+=amount;
+  var iso=dateKey(p.start);
+  rows.push({
+   index:p.index,
+   start:p.start,
+   end:p.end,
+   days:p.days,
+   iso:iso,
+   amount:amount,
+   actualDate:actualDate,
+   supported:supported,
+   done:!!s.completed[iso],
+   incomeByStart:cumulativeIncomeAtDate(events,p.start),
+   incomeByActual:actualDate?cumulativeIncomeAtDate(events,actualDate):cumulativeIncomeAtDate(events,addUtcDays(cycle.end,-1))
+  });
  });
+
  var planned=rows.reduce(function(sum,x){return sum+x.amount;},0);
+ var supportedTotal=rows.reduce(function(sum,x){return sum+(x.supported?x.amount:0);},0);
  var done=rows.reduce(function(sum,x){return sum+(x.done?x.amount:0);},0);
- return {days:days,rows:rows,budget:budget,amount:amount,planned:planned,done:done,remaining:Math.max(0,planned-done),difference:planned-budget};
+ var totalIncome=events.reduce(function(sum,e){return sum+e.amount;},0);
+ var afterMandatory=Math.max(0,totalIncome-mandatory);
+ var fullWeekAmount=cycle.days?budget*(7/cycle.days):0;
+
+ return {
+  cycle:cycle,periods:periods,rows:rows,budget:budget,fullWeekAmount:fullWeekAmount,
+  planned:planned,supportedTotal:supportedTotal,done:done,remaining:Math.max(0,planned-done),
+  mandatory:mandatory,totalIncome:totalIncome,afterMandatory:afterMandatory,
+  events:events,incomeSources:incomeInfo.sources,
+  uncovered:Math.max(0,planned-supportedTotal)
+ };
+}
+function calendarMonthHtml(y,m,plan){
+ var firstJsDay=new Date(Date.UTC(y,m-1,1)).getUTCDay();
+ var offset=(firstJsDay+6)%7;
+ var daysInMonth=new Date(Date.UTC(y,m,0)).getUTCDate();
+ var incomeByKey={},actualByKey={},periodStartByKey={};
+
+ plan.events.forEach(function(e){
+  var k=dateKey(e.date);
+  if(!incomeByKey[k])incomeByKey[k]=[];
+  incomeByKey[k].push(e);
+ });
+ plan.rows.forEach(function(x){
+  periodStartByKey[dateKey(x.start)]=x;
+  if(x.actualDate){
+   var k=dateKey(x.actualDate);
+   if(!actualByKey[k])actualByKey[k]=[];
+   actualByKey[k].push(x);
+  }
+ });
+
+ var html='<div class="cycle-calendar-month"><div class="cycle-calendar-title">'+MONTHS[m]+' '+y+'</div>'+
+  '<div class="life-calendar-head"><div>Пн</div><div>Вт</div><div>Ср</div><div>Чт</div><div>Пт</div><div>Сб</div><div>Вс</div></div>'+
+  '<div class="life-calendar-grid">';
+
+ for(var e0=0;e0<offset;e0++)html+='<div class="life-day empty"></div>';
+
+ for(var d=1;d<=daysInMonth;d++){
+  var dt=utcDate(y,m,d),k=dateKey(dt);
+  var inCycle=plan.cycle&&dt>=plan.cycle.start&&dt<plan.cycle.end;
+  var incomes=incomeByKey[k]||[];
+  var actuals=actualByKey[k]||[];
+  var period=periodStartByKey[k];
+  var hasShort=period&&!period.supported;
+  var delayed=actuals.some(function(x){return dateKey(x.actualDate)!==dateKey(x.start);});
+  var cls='life-day '+(inCycle?'cycle-active':'outside-cycle')+(incomes.length?' income':'')+(actuals.length?' transfer':'')+(delayed?' transfer-delayed':'')+(hasShort?' shortfall':'');
+  var doneActual=actuals.length&&actuals.every(function(x){return x.done;});
+  if(doneActual)cls+=' done';
+
+  html+='<div class="'+cls+'"><div class="life-day-num">'+d+'</div>';
+  if(incomes.length){
+   var incTotal=incomes.reduce(function(a,b){return a+b.amount;},0);
+   html+='<div class="life-day-income">+ '+rub(incTotal)+'</div>';
+  }
+  if(period){
+   html+='<div class="life-period-tag">неделя '+period.index+'</div>';
+   html+='<div class="life-day-plan">план '+rubTransfer(period.amount)+'</div>';
+  }
+  if(actuals.length){
+   var trTotal=actuals.reduce(function(a,b){return a+b.amount;},0);
+   html+='<div class="life-day-amount">'+rubTransfer(trTotal)+'</div><div class="life-day-state">'+(doneActual?'✓ переведено':(delayed?'после поступления':'перевод'))+'</div>';
+  }else if(hasShort){
+   html+='<div class="life-day-state">не обеспечено</div>';
+  }
+  html+='</div>';
+ }
+ html+='</div></div>';
+ return html;
 }
 function renderLifeTransfers(){
  ensureLifeTransferSettings();
  var s=state.lifeTransferSettings;
 
  lifeTransferYear.innerHTML='';
- for(var y=2026;y<=2031;y++){
-  lifeTransferYear.insertAdjacentHTML('beforeend','<option value="'+y+'" '+(Number(s.year)===y?'selected':'')+'>'+y+'</option>');
+ for(var y0=2026;y0<=2031;y0++){
+  lifeTransferYear.insertAdjacentHTML('beforeend','<option value="'+y0+'" '+(Number(s.year)===y0?'selected':'')+'>'+y0+'</option>');
  }
  lifeTransferMonth.innerHTML='';
- for(var m=1;m<=12;m++){
-  lifeTransferMonth.insertAdjacentHTML('beforeend','<option value="'+m+'" '+(Number(s.month)===m?'selected':'')+'>'+MONTHS[m]+'</option>');
+ for(var m0=1;m0<=12;m0++){
+  lifeTransferMonth.insertAdjacentHTML('beforeend','<option value="'+m0+'" '+(Number(s.month)===m0?'selected':'')+'>'+MONTHS[m0]+'</option>');
  }
- lifeTransferWeekday.value=String(Number(s.weekday)||0);
- lifeTransferMode.value=s.mode||'auto';
- lifeTransferFixedAmount.value=valOrBlank(s.fixedAmount);
- lifeTransferFixedWrap.classList.toggle('show',s.mode==='fixed');
 
- var y=Number(s.year)||2026,m=Number(s.month)||1;
+ var y=Number(s.year)||2026,m=Number(s.month)||9;
  var plan=lifeTransferPlan(y,m);
 
+ if(!plan.cycle){
+  lifeTransferCycleRange.textContent='до 08.09.2026';
+  lifeTransferBudget.textContent='—';
+  lifeTransferCount.textContent='0';
+  lifeTransferDatesText.textContent='расчёт ещё не начался';
+  lifeTransferWeekly.textContent='—';
+  lifeTransferWeeklyNote.textContent='';
+  lifeTransferRemaining.textContent='—';
+  lifeTransferDoneText.textContent='';
+  lifeTransferIncomeSource.textContent='';
+  lifeTransferIncomeList.innerHTML='<div class="small">Поступления появятся начиная с цикла 08.09.2026.</div>';
+  lifeTransferBalanceNotice.innerHTML='<b>Первый бюджетный цикл:</b> 08.09.2026–08.10.2026.';
+  lifeTransferCalendars.innerHTML='';
+  lifeTransferList.innerHTML='<div class="small">Переводы появятся начиная с 08.09.2026.</div>';
+  return;
+ }
+
+ lifeTransferCycleRange.textContent=formatDMY(plan.cycle.start)+' → '+formatDMY(plan.cycle.end);
  lifeTransferBudget.textContent=rub(plan.budget);
  lifeTransferCount.textContent=String(plan.rows.length);
- lifeTransferDatesText.textContent=plan.rows.length?plan.rows.map(function(x){return x.day;}).join(', ')+' '+MONTHS[m].toLowerCase():'нет дат';
- lifeTransferWeekly.textContent=rubTransfer(plan.amount);
- lifeTransferWeeklyNote.textContent=s.mode==='fixed'?'фиксированная сумма':'месячный бюджет ÷ '+plan.rows.length;
+ lifeTransferDatesText.textContent=plan.rows.map(function(x){return formatRangeShort(x.start,x.end);}).join(' · ');
+ lifeTransferWeekly.textContent=rubTransfer(plan.fullWeekAmount);
+ var last=plan.rows[plan.rows.length-1];
+ lifeTransferWeeklyNote.textContent=last&&last.days<7?'последний период '+last.days+' дн. = '+rubTransfer(last.amount):'каждый период 7 дней';
  lifeTransferRemaining.textContent=rubTransfer(plan.remaining);
  lifeTransferDoneText.textContent='переведено '+rubTransfer(plan.done)+' из '+rubTransfer(plan.planned);
 
- if(s.mode==='auto'){
-  lifeTransferBalanceNotice.innerHTML='В этом месяце <b>'+plan.rows.length+'</b> переводов. Бюджет '+rub(plan.budget)+' делится поровну: по <b>'+rubTransfer(plan.amount)+'</b> каждую неделю. Итого за месяц = <b>'+rubTransfer(plan.planned)+'</b>.';
+ var sourceKinds={};
+ plan.events.forEach(function(e){if(e.source)sourceKinds[e.source]=true;});
+ lifeTransferIncomeSource.textContent=Object.keys(sourceKinds).join(' + ')||'нет данных';
+ lifeTransferIncomeList.innerHTML=plan.events.length?plan.events.map(function(e){
+  return '<div class="income-event"><div class="d">'+formatDM(e.date)+'</div><div class="a">'+rub(e.amount)+'</div><div class="n">'+escapeHtml(e.name)+' · '+escapeHtml(e.source)+'</div></div>';
+ }).join(''):'<div class="small">Внутри этого цикла поступления не найдены.</div>';
+
+ if(plan.uncovered>0){
+  lifeTransferBalanceNotice.innerHTML=
+   '<b>Цикл '+formatDM(plan.cycle.start)+'–'+formatDM(plan.cycle.end)+'</b> (следующее 8-е — граница нового цикла). '+
+   'Бюджет жизни '+rub(plan.budget)+' распределён по '+plan.cycle.days+' дням. '+
+   'Обязательные выбранного бюджетного месяца: '+rub(plan.mandatory)+'. Доход внутри цикла: '+rub(plan.totalIncome)+
+   '. <b>Не обеспечено поступлениями: '+rubTransfer(plan.uncovered)+'</b>.';
  }else{
-  var diff=plan.difference;
-  var msg=diff===0?'совпадает с бюджетом':(diff>0?'выше бюджета на '+rubTransfer(diff):'ниже бюджета на '+rubTransfer(Math.abs(diff)));
-  lifeTransferBalanceNotice.innerHTML='Фиксированный режим: '+plan.rows.length+' × '+rubTransfer(plan.amount)+' = <b>'+rubTransfer(plan.planned)+'</b>. Это <b>'+msg+'</b> жизни на месяц ('+rub(plan.budget)+').';
+  var delayed=plan.rows.filter(function(x){return x.actualDate&&dateKey(x.actualDate)!==dateKey(x.start);}).length;
+  lifeTransferBalanceNotice.innerHTML=
+   '<b>Цикл '+formatDM(plan.cycle.start)+'–'+formatDM(plan.cycle.end)+'</b>. Следующее 8-е не входит в текущий цикл. '+
+   'Полная неделя = '+rubTransfer(plan.fullWeekAmount)+'. '+
+   (last&&last.days<7?'Последний неполный период '+formatRangeShort(last.start,last.end)+' ('+last.days+' дн.) = '+rubTransfer(last.amount)+'. ':'')+
+   (delayed?'<b>'+delayed+' перевод(а) перенесены</b> на даты после поступлений.':'Все переводы обеспечены к началу своих периодов.');
  }
 
- // Calendar
- var firstJsDay=new Date(y,m-1,1).getDay();
- var offset=(firstJsDay+6)%7; // Monday-first
- var daysInMonth=new Date(y,m,0).getDate();
- var transferByDay={};
- plan.rows.forEach(function(x){transferByDay[x.day]=x;});
- var cal='';
- for(var e=0;e<offset;e++)cal+='<div class="life-day empty"></div>';
- for(var d=1;d<=daysInMonth;d++){
-  var tr=transferByDay[d];
-  var cls='life-day'+(tr?' transfer':'')+(tr&&tr.done?' done':'');
-  cal+='<div class="'+cls+'"><div class="life-day-num">'+d+'</div>';
-  if(tr){
-   cal+='<div class="life-day-amount">'+rub(tr.amount)+'</div><div class="life-day-state">'+(tr.done?'✓ переведено':'перевод')+'</div>';
-  }
-  cal+='</div>';
- }
- lifeTransferCalendar.innerHTML=cal;
+ // two calendars: start month + next month
+ lifeTransferCalendars.innerHTML=
+  calendarMonthHtml(plan.cycle.startY,plan.cycle.startM,plan)+
+  calendarMonthHtml(plan.cycle.nextY,plan.cycle.nextM,plan);
 
- // List
  if(!plan.rows.length){
-  lifeTransferList.innerHTML='<div class="small">В этом месяце нет выбранного дня недели.</div>';
+  lifeTransferList.innerHTML='<div class="small">Нет периодов.</div>';
  }else{
-  var weekdayNames=['Пн','Вт','Ср','Чт','Пт','Сб','Вс'];
   var html='';
   plan.rows.forEach(function(x){
+   var shift='';
+   if(!x.actualDate)shift='<div class="life-transfer-short">Не хватает поступлений в цикле</div>';
+   else if(dateKey(x.actualDate)!==dateKey(x.start))shift='<div class="life-transfer-shift">Перевести → '+formatDM(x.actualDate)+'</div>';
+   else shift='<div class="mini">обеспечено к началу</div>';
+
+   var meta='Период: <b>'+formatRangeShort(x.start,x.end)+'</b> · '+x.days+' дн.';
+   meta+='<br>Плановый перевод: <b>'+formatDM(x.start)+'</b>';
+   if(x.actualDate)meta+=' · Фактически: <b>'+formatDM(x.actualDate)+'</b>';
+   meta+='<br>Поступило к началу периода: '+rub(x.incomeByStart);
+
    html+='<div class="life-transfer-row '+(x.done?'done':'')+'">'+
-    '<div class="life-transfer-date">'+pad2(x.day)+'.'+pad2(m)+'.'+y+'<div class="mini">'+weekdayNames[Number(s.weekday)||0]+'</div></div>'+
-    '<div class="life-transfer-check"><label style="display:flex;align-items:center;gap:7px"><input type="checkbox" data-life-transfer-done="'+x.iso+'" '+(x.done?'checked':'')+'>Переведено</label></div>'+
+    '<div class="life-transfer-date">Неделя '+x.index+'<div class="mini">'+formatRangeShort(x.start,x.end)+'</div>'+shift+'</div>'+
+    '<div class="life-transfer-meta">'+meta+'<div class="life-transfer-check" style="justify-content:flex-start;margin-top:5px"><label style="display:flex;align-items:center;gap:7px"><input type="checkbox" data-life-transfer-done="'+x.iso+'" '+(x.done?'checked':'')+' '+(!x.supported?'disabled':'')+'>Переведено</label></div></div>'+
     '<div class="life-transfer-amount">'+rubTransfer(x.amount)+'</div>'+
     '</div>';
   });
@@ -2520,6 +2952,31 @@ function showHome(pushHistory){
 document.querySelectorAll('.tab').forEach(function(b){
  b.addEventListener('click',function(){openPage(b.dataset.tab,true);});
 });
+
+(function initNavSearch(){
+ var input=document.getElementById('navSearchInput');
+ var clear=document.getElementById('navSearchClear');
+ var none=document.getElementById('navNoResults');
+ if(!input)return;
+ function apply(){
+  var q=String(input.value||'').trim().toLowerCase();
+  var visible=0;
+  document.querySelectorAll('.nav-searchable').forEach(function(item){
+   var hay=(String(item.dataset.search||'')+' '+String(item.textContent||'')).toLowerCase();
+   var show=!q||hay.indexOf(q)!==-1;
+   item.style.display=show?'':'none';
+   if(show)visible++;
+  });
+  document.querySelectorAll('[data-nav-group]').forEach(function(group){
+   var any=Array.from(group.querySelectorAll('.nav-searchable')).some(function(x){return x.style.display!=='none';});
+   group.hidden=!any;
+  });
+  if(none)none.classList.toggle('show',visible===0);
+ }
+ input.addEventListener('input',apply);
+ if(clear)clear.addEventListener('click',function(){input.value='';apply();input.focus();});
+})();
+
 document.querySelectorAll('[data-home]').forEach(function(b){
  b.addEventListener('click',function(){showHome(true);});
 });
@@ -2547,20 +3004,10 @@ lifeTransferYear.addEventListener('change',function(){
 lifeTransferMonth.addEventListener('change',function(){
  state.lifeTransferSettings.month=Number(lifeTransferMonth.value);save();renderLifeTransfers();
 });
-lifeTransferWeekday.addEventListener('change',function(){
- state.lifeTransferSettings.weekday=Number(lifeTransferWeekday.value);save();renderLifeTransfers();
-});
-lifeTransferMode.addEventListener('change',function(){
- state.lifeTransferSettings.mode=lifeTransferMode.value||'auto';save();renderLifeTransfers();
-});
-lifeTransferFixedAmount.addEventListener('change',function(){
- state.lifeTransferSettings.fixedAmount=lifeTransferFixedAmount.value===''?'':num(lifeTransferFixedAmount.value);save();renderLifeTransfers();
-});
 lifeTransferClearMonth.addEventListener('click',function(){
- var y=Number(state.lifeTransferSettings.year)||2026,m=Number(state.lifeTransferSettings.month)||1;
- Object.keys(state.lifeTransferSettings.completed||{}).forEach(function(k){
-  if(k.indexOf(String(y)+'-'+pad2(m)+'-')===0)delete state.lifeTransferSettings.completed[k];
- });
+ var y=Number(state.lifeTransferSettings.year)||2026,m=Number(state.lifeTransferSettings.month)||9;
+ var plan=lifeTransferPlan(y,m);
+ (plan.rows||[]).forEach(function(x){delete state.lifeTransferSettings.completed[x.iso];});
  save();renderLifeTransfers();
 });
 
@@ -2593,7 +3040,7 @@ addAsset.addEventListener('click',function(){
 });
 
 function backupJson(){
- var envelope={app:'finance-plan',version:'7.8',exportedAt:new Date().toISOString(),state:state};
+ var envelope={app:'finance-plan',version:'8.1',exportedAt:new Date().toISOString(),state:state};
  return JSON.stringify(envelope,null,2);
 }
 function showJson(message){
